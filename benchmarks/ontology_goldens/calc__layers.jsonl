@@ -1,0 +1,3 @@
+{"id":"layer::Shared","kind":"Module","name":"Shared","properties":{"layer":"Shared","symbol_count":21,"unit_count":1,"view":"layers"},"record":"node"}
+{"id":"unit::src","kind":"Module","name":"src","properties":{"file_count":3,"layer":"Shared","symbol_count":21,"view":"layers"},"record":"node"}
+{"from":"layer::Shared","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::src"}

@@ -1,0 +1,7 @@
+{"id":"archetype::Unclassified","kind":"Type","name":"Unclassified","properties":{"archetype":"Unclassified","count":3,"view":"archetypes"},"record":"node"}
+{"id":"profile::Care_Admin","kind":"Type","name":"Care_Admin","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"profile","view":"archetypes"},"record":"node"}
+{"id":"sobject::Case__c","kind":"Type","name":"Case__c","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"sobject","view":"archetypes"},"record":"node"}
+{"id":"workflow_rule::Case__c.Escalate High Severity","kind":"Function","name":"Escalate High Severity","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"workflow_rule","view":"archetypes"},"record":"node"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"profile::Care_Admin"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"sobject::Case__c"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"workflow_rule::Case__c.Escalate High Severity"}

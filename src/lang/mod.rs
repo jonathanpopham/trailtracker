@@ -1,0 +1,65 @@
+//! Language front ends. Each lowers its lossless CST into the shared IR; the
+//! graph layer is language-neutral. Rust is implemented; Python (lexer first)
+//! and C# are being built onto the same core.
+
+pub mod frontend;
+
+pub mod ada;
+pub mod apex;
+pub mod apl;
+pub mod asm;
+pub mod awk;
+pub mod bash;
+pub mod c;
+pub mod clojure;
+pub mod cobol;
+pub mod cpp;
+pub mod crystal;
+pub mod csharp;
+pub mod cypher;
+pub mod d;
+pub mod dart;
+pub mod elixir;
+pub mod elm;
+pub mod erlang;
+pub mod forth;
+pub mod fortran;
+pub mod fsharp;
+pub mod go;
+pub mod graphql;
+pub mod groovy;
+pub mod haskell;
+pub mod java;
+pub mod javascript;
+pub mod julia;
+pub mod kotlin;
+pub mod lisp;
+pub mod lua;
+pub mod mojo;
+pub mod nim;
+pub mod nix;
+pub mod objc;
+pub mod ocaml;
+pub mod pascal;
+pub mod perl;
+pub mod php;
+pub mod powershell;
+pub mod prolog;
+pub mod python;
+pub mod r;
+pub mod ruby;
+pub mod rust;
+pub mod salesforce;
+pub mod scala;
+pub mod smalltalk;
+pub mod solidity;
+pub mod sql;
+pub mod swift;
+pub mod tcl;
+pub mod typescript;
+pub mod verilog;
+pub mod vhdl;
+pub mod visualbasic;
+pub mod wasm;
+pub mod xml;
+pub mod zig;

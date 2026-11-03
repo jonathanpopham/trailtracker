@@ -1,0 +1,3 @@
+{"id":"layer::Shared","kind":"Module","name":"Shared","properties":{"layer":"Shared","symbol_count":5,"unit_count":1,"view":"layers"},"record":"node"}
+{"id":"unit::force-app/main","kind":"Module","name":"force-app/main","properties":{"file_count":5,"layer":"Shared","symbol_count":5,"view":"layers"},"record":"node"}
+{"from":"layer::Shared","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::force-app/main"}

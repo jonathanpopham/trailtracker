@@ -1,0 +1,92 @@
+{
+ "repo": "alacritty",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:3125f9c473c3dcb0 timestamp=2026-07-07T13:08:43Z)",
+ "date": "2026-07-07",
+ "sha": "bdb72b32eeb074e3a0b8559d8ccac458237474a3",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "TerminalDisplay",
+   "structuralCluster": "alacritty",
+   "pathPrefixes": [
+    "alacritty/src/config/",
+    "alacritty/src/display/",
+    "alacritty/src/renderer/"
+   ],
+   "fileCount": 38,
+   "prefixCoverage": 0.921,
+   "description": "Renders terminal display with window management, configuration parsing, and graphical output.",
+   "responsibilities": [
+    "display rendering",
+    "window management",
+    "configuration UI",
+    "graphics abstraction",
+    "text layout"
+   ]
+  },
+  {
+   "name": "TerminalEngine",
+   "structuralCluster": "alacritty_terminal",
+   "pathPrefixes": [
+    "alacritty_terminal/"
+   ],
+   "fileCount": 24,
+   "prefixCoverage": 1.0,
+   "description": "Implements VT100-compatible terminal emulation with grid management, cell state, and selection handling.",
+   "responsibilities": [
+    "grid management",
+    "cell state tracking",
+    "selection handling",
+    "search functionality",
+    "VI mode support"
+   ]
+  },
+  {
+   "name": "InputProcessing",
+   "structuralCluster": "alacritty/input",
+   "pathPrefixes": [
+    "alacritty/build.rs",
+    "alacritty/src/cli.rs",
+    "alacritty/src/daemon.rs",
+    "alacritty/src/event.rs",
+    "alacritty/src/input/",
+    "alacritty/src/logging.rs",
+    "alacritty/src/macos/",
+    "alacritty/src/main.rs",
+    "alacritty/src/migrate/",
+    "alacritty/src/panic.rs",
+    "alacritty/src/polling/",
+    "alacritty/src/string.rs"
+   ],
+   "fileCount": 22,
+   "prefixCoverage": 0.818,
+   "description": "Processes keyboard and mouse input and dispatches events through the terminal application.",
+   "responsibilities": [
+    "keyboard input handling",
+    "mouse event processing",
+    "event dispatching",
+    "configuration updates",
+    "command-line parsing"
+   ]
+  },
+  {
+   "name": "ConfigDeriveMacro",
+   "structuralCluster": "alacritty_config_derive",
+   "pathPrefixes": [
+    "alacritty_config_derive/"
+   ],
+   "fileCount": 5,
+   "prefixCoverage": 1.0,
+   "description": "Procedural macro for generating custom deserialization code for terminal configuration types.",
+   "responsibilities": [
+    "macro derivation",
+    "deserialization generation",
+    "serde integration",
+    "config type introspection"
+   ]
+  }
+ ],
+ "reviewHint": "Alacritty workspace: alacritty/ (GUI: display, renderer, config, input) vs alacritty_terminal/ (VT emulation core: grid, vte handling) vs alacritty_config(_derive) (config plumbing). The extractor splits alacritty/ into two clusters (window/config vs input/event) \u2014 decide if that split is real or one GUI domain."
+}

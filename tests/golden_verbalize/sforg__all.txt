@@ -1,0 +1,114 @@
+D1 = the `flows` domain (4 files, 33 symbols)
+D2 = the `objects` domain (4 files, 4 symbols)
+D3 = the `objects/Case__c` domain (1 files, 2 symbols)
+F1 = the type `Case__c` (`force-app/main/default/objects/Case__c/Case__...`)
+F2 = the function `Lookup_Patient` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F3 = the function `Validate_Referral` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F4 = the function `Process_Cases` (`force-app/main/default/flows/BatchReview.flow...`)
+F5 = the function `Assign_Pharmacist` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F6 = the function `Summarize` (`force-app/main/default/flows/BatchReview.flow...`)
+F7 = the function `Notify_Family` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F8 = the function `Touch_Case` (`force-app/main/default/flows/BatchReview.flow...`)
+F9 = the function `Create_Case` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F10 = the function `Decide_Eligible` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F11 = the function `Check_Response` (`force-app/main/default/flows/DeepIntake.flow-...`)
+F12 = the function `Log_Outreach` (`force-app/main/default/flows/DeepIntake.flow-...`)
+The graph contains 52 nodes and 93 edges.
+The coverage spans 9 files of 9 files.
+The graph holds 0 violations.
+The graph contains 0 cycles.
+D1 contains 4 of 9 files and 33 of 40 symbols.
+D1 depends on D3 through 8 references of 9 references, most via the unit `objects/Case__c`.
+D2 contains 4 of 9 files and 4 of 40 symbols.
+D2 depends on D3 through 1 references of 9 references, most via the unit `objects/Case__c`.
+D3 contains 1 of 9 files and 2 of 40 symbols.
+F1 is the type `Case__c`: domain `objects/Case__c`, layer Shared, archetype `Unclassified`.
+F1 has fan-in 8 of 52 nodes.
+F1 has fan-out 0 of 52 nodes.
+28 nodes of 52 nodes depend on F1 through transitive references.
+F1 has 8 dependents of 52 nodes.
+The function `Lookup_Patient` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F1.
+The constant `caseList` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F1.
+The function `Touch_Case` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F1.
+The function `Create_Case` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F1.
+The function `Log_Outreach` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F1.
+The constant `Greeting` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F1.
+The function `Update_Case` in the file `force-app/main/default/flows/FollowUp.flow-me...` depends on F1.
+The function `Create_Case` in the file `force-app/main/default/flows/Intake.flow-meta...` depends on F1.
+F2 is the function `Lookup_Patient`: domain `flows`, layer Shared, archetype `Unclassified`.
+F2 has fan-in 3 of 52 nodes.
+F2 has fan-out 3 of 52 nodes.
+8 nodes of 52 nodes depend on F2 through transitive references.
+F2 has 3 dependents of 52 nodes.
+The function `Validate_Referral` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F2.
+The function `Assign_Pharmacist` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F2.
+The function `Create_Case` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F2.
+F3 is the function `Validate_Referral`: domain `flows`, layer Shared, archetype `Unclassified`.
+F3 has fan-in 3 of 52 nodes.
+F3 has fan-out 1 of 52 nodes.
+8 nodes of 52 nodes depend on F3 through transitive references.
+F3 has 3 dependents of 52 nodes.
+The function `Lookup_Patient` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F3.
+The function `Decide_Eligible` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F3.
+The function `start` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F3.
+F4 is the function `Process_Cases`: domain `flows`, layer Shared, archetype `Unclassified`.
+F4 has fan-in 2 of 52 nodes.
+F4 has fan-out 3 of 52 nodes.
+5 nodes of 52 nodes depend on F4 through transitive references.
+F4 has 2 dependents of 52 nodes.
+The function `Touch_Case` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F4.
+The function `start` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F4.
+F5 is the function `Assign_Pharmacist`: domain `flows`, layer Shared, archetype `Unclassified`.
+F5 has fan-in 2 of 52 nodes.
+F5 has fan-out 2 of 52 nodes.
+8 nodes of 52 nodes depend on F5 through transitive references.
+F5 has 2 dependents of 52 nodes.
+The function `Create_Case` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F5.
+The function `Decide_Eligible` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F5.
+F6 is the function `Summarize`: domain `flows`, layer Shared, archetype `Unclassified`.
+F6 has fan-in 2 of 52 nodes.
+F6 has fan-out 1 of 52 nodes.
+6 nodes of 52 nodes depend on F6 through transitive references.
+F6 has 2 dependents of 52 nodes.
+The function `Process_Cases` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F6.
+The function `Touch_Case` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F6.
+F7 is the function `Notify_Family`: domain `flows`, layer Shared, archetype `Unclassified`.
+F7 has fan-in 2 of 52 nodes.
+F7 has fan-out 1 of 52 nodes.
+12 nodes of 52 nodes depend on F7 through transitive references.
+F7 has 2 dependents of 52 nodes.
+The function `Check_Response` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F7.
+The function `Schedule_Review` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F7.
+F8 is the function `Touch_Case`: domain `flows`, layer Shared, archetype `Unclassified`.
+F8 has fan-in 1 of 52 nodes.
+F8 has fan-out 3 of 52 nodes.
+5 nodes of 52 nodes depend on F8 through transitive references.
+F8 has 1 dependents of 52 nodes.
+The function `Process_Cases` in the file `force-app/main/default/flows/BatchReview.flow...` depends on F8.
+F9 is the function `Create_Case`: domain `flows`, layer Shared, archetype `Constructor`.
+F9 has fan-in 1 of 52 nodes.
+F9 has fan-out 3 of 52 nodes.
+8 nodes of 52 nodes depend on F9 through transitive references.
+F9 has 1 dependents of 52 nodes.
+The function `Decide_Eligible` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F9.
+F10 is the function `Decide_Eligible`: domain `flows`, layer Shared, archetype `Unclassified`.
+F10 has fan-in 1 of 52 nodes.
+F10 has fan-out 3 of 52 nodes.
+8 nodes of 52 nodes depend on F10 through transitive references.
+F10 has 1 dependents of 52 nodes.
+The function `Lookup_Patient` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F10.
+F11 is the function `Check_Response`: domain `flows`, layer Shared, archetype `Dto`.
+F11 has fan-in 1 of 52 nodes.
+F11 has fan-out 2 of 52 nodes.
+12 nodes of 52 nodes depend on F11 through transitive references.
+F11 has 1 dependents of 52 nodes.
+The function `Log_Outreach` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F11.
+F12 is the function `Log_Outreach`: domain `flows`, layer Shared, archetype `Unclassified`.
+F12 has fan-in 1 of 52 nodes.
+F12 has fan-out 2 of 52 nodes.
+12 nodes of 52 nodes depend on F12 through transitive references.
+F12 has 1 dependents of 52 nodes.
+The function `Notify_Family` in the file `force-app/main/default/flows/DeepIntake.flow-...` depends on F12.
+The `flow` function `DeepIntake` has depth 12 and 12 nodes.
+The `flow` function `BatchReview` has depth 6 and 6 nodes.
+The `flow` function `FollowUp` has depth 1 and 2 nodes.

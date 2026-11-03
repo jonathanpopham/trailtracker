@@ -1,0 +1,239 @@
+{
+ "repo": "dubbo",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:ab8bad3ab716260c timestamp=2026-07-07T13:16:34Z)",
+ "date": "2026-07-07",
+ "sha": "316df8e57677cc8c1ed6d92bd40ca0daba27393f",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "DubboCore",
+   "structuralCluster": "dubbo",
+   "pathPrefixes": [
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/router/",
+    "dubbo-cluster/src/test/java/org/apache/dubbo/rpc/cluster/router/",
+    "dubbo-common/src/main/java/org/apache/dubbo/metadata/",
+    "dubbo-common/src/test/java/org/apache/dubbo/metadata/",
+    "dubbo-compatible/src/main/java/com/alibaba/dubbo/common/",
+    "dubbo-compatible/src/test/java/org/apache/dubbo/common/",
+    "dubbo-maven-plugin/src/main/java/org/apache/dubbo/maven/plugin/aot/",
+    "dubbo-metadata/dubbo-metadata-api/",
+    "dubbo-plugin/dubbo-native/",
+    "dubbo-remoting/dubbo-remoting-api/",
+    "dubbo-rpc/dubbo-rpc-triple/",
+    "dubbo-serialization/dubbo-serialization-api/"
+   ],
+   "fileCount": 952,
+   "prefixCoverage": 0.808,
+   "description": "Core RPC framework implementation with protocol support, remoting infrastructure, and metadata handling.",
+   "responsibilities": [
+    "RPC protocol implementation",
+    "Service metadata management",
+    "Message serialization",
+    "Protocol handler routing",
+    "Core data models"
+   ]
+  },
+  {
+   "name": "DubboCommon",
+   "structuralCluster": "dubbo-common",
+   "pathPrefixes": [
+    "dubbo-common/src/main/java/org/apache/dubbo/common/",
+    "dubbo-common/src/test/java/org/apache/dubbo/common/"
+   ],
+   "fileCount": 756,
+   "prefixCoverage": 0.816,
+   "description": "Foundational utilities and extensibility framework including URL handling, reflection, and SPI mechanisms.",
+   "responsibilities": [
+    "Extension loading and discovery",
+    "URL parsing and manipulation",
+    "String and reflection utilities",
+    "Timer and scheduling",
+    "Type conversion"
+   ]
+  },
+  {
+   "name": "HTTPTransport",
+   "structuralCluster": "dubbo/dubbo-remoting-http12",
+   "pathPrefixes": [
+    "dubbo-plugin/",
+    "dubbo-remoting/dubbo-remoting-http12/"
+   ],
+   "fileCount": 651,
+   "prefixCoverage": 0.853,
+   "description": "HTTP/1.2 and HTTP/3 protocol transport layer with Netty adapters and HTTP request/response handling.",
+   "responsibilities": [
+    "HTTP protocol adapters",
+    "Netty channel management",
+    "HTTP header handling",
+    "REST endpoint support",
+    "Servlet integration"
+   ]
+  },
+  {
+   "name": "DubboBootstrap",
+   "structuralCluster": "dubbo/dubbo-config-api",
+   "pathPrefixes": [
+    "dubbo-common/src/main/java/org/apache/dubbo/config/",
+    "dubbo-common/src/main/java/org/apache/dubbo/rpc/",
+    "dubbo-common/src/test/java/org/apache/dubbo/common/beans/model/",
+    "dubbo-common/src/test/java/org/apache/dubbo/config/",
+    "dubbo-common/src/test/java/org/apache/dubbo/rpc/executor/",
+    "dubbo-common/src/test/java/org/apache/dubbo/rpc/service/",
+    "dubbo-config/",
+    "dubbo-serialization/dubbo-serialization-fastjson2/src/main/",
+    "dubbo-serialization/dubbo-serialization-hessian2/src/main/",
+    "dubbo-test/dubbo-test-spring/"
+   ],
+   "fileCount": 644,
+   "prefixCoverage": 0.803,
+   "description": "Application initialization and configuration management providing bootstrap lifecycle and config builders.",
+   "responsibilities": [
+    "Application lifecycle management",
+    "Configuration property handling",
+    "Model dependency management",
+    "Configuration validation",
+    "Bootstrap orchestration"
+   ]
+  },
+  {
+   "name": "RPCProtocol",
+   "structuralCluster": "dubbo-rpc",
+   "pathPrefixes": [
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/configurator/",
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/filter/",
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/loadbalance/",
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/merger/",
+    "dubbo-cluster/src/main/java/org/apache/dubbo/rpc/cluster/support/",
+    "dubbo-cluster/src/test/java/org/apache/dubbo/rpc/cluster/filter/",
+    "dubbo-cluster/src/test/java/org/apache/dubbo/rpc/cluster/merger/",
+    "dubbo-rpc/dubbo-rpc-api/",
+    "dubbo-rpc/dubbo-rpc-dubbo/src/main/",
+    "dubbo-rpc/dubbo-rpc-dubbo/src/test/java/org/apache/dubbo/rpc/protocol/dubbo/support/",
+    "dubbo-rpc/dubbo-rpc-injvm/"
+   ],
+   "fileCount": 356,
+   "prefixCoverage": 0.803,
+   "description": "RPC invocation processing with clustering, load balancing, filtering, and protocol-specific implementations.",
+   "responsibilities": [
+    "RPC context management",
+    "Cluster routing and failover",
+    "Filter chain execution",
+    "Async result handling",
+    "Protocol abstraction"
+   ]
+  },
+  {
+   "name": "MetricsAndTracing",
+   "structuralCluster": "dubbo-metrics",
+   "pathPrefixes": [
+    "dubbo-metrics/"
+   ],
+   "fileCount": 200,
+   "prefixCoverage": 0.96,
+   "description": "Observability stack providing metrics collection, distributed tracing, and event-driven monitoring.",
+   "responsibilities": [
+    "Metrics collection and aggregation",
+    "Event tracking and publishing",
+    "Prometheus integration",
+    "Distributed tracing exporters",
+    "Performance monitoring"
+   ]
+  },
+  {
+   "name": "ServiceRegistry",
+   "structuralCluster": "dubbo-registry",
+   "pathPrefixes": [
+    "dubbo-registry/"
+   ],
+   "fileCount": 164,
+   "prefixCoverage": 0.951,
+   "description": "Service registration and discovery with registry integration, service instance management, and migration support.",
+   "responsibilities": [
+    "Service instance registration",
+    "Service discovery and lookup",
+    "Registry protocol implementation",
+    "Instance address resolution",
+    "Migration and routing rules"
+   ]
+  },
+  {
+   "name": "LegacyCompatibility",
+   "structuralCluster": "dubbo-compatible",
+   "pathPrefixes": [
+    "dubbo-compatible/src/main/",
+    "dubbo-compatible/src/test/java/org/apache/dubbo/config/spring/",
+    "dubbo-compatible/src/test/java/org/apache/dubbo/filter/",
+    "dubbo-compatible/src/test/java/org/apache/dubbo/metadata/annotation/processing/model/",
+    "dubbo-compatible/src/test/java/org/apache/dubbo/rpc/cluster/"
+   ],
+   "fileCount": 133,
+   "prefixCoverage": 0.805,
+   "description": "Backward compatibility layer providing wrapper implementations for deprecated Dubbo APIs.",
+   "responsibilities": [
+    "Legacy API wrappers",
+    "Deprecated annotation support",
+    "Backward-compatible invocation",
+    "Legacy registry support",
+    "Protocol conversion"
+   ]
+  },
+  {
+   "name": "SpringBootIntegration",
+   "structuralCluster": "dubbo-spring-boot-project",
+   "pathPrefixes": [
+    "dubbo-spring-boot-project/"
+   ],
+   "fileCount": 84,
+   "prefixCoverage": 1.0,
+   "description": "Spring Boot auto-configuration providing Dubbo integration, observability setup, and health checking.",
+   "responsibilities": [
+    "Auto-configuration properties",
+    "Observability backend setup",
+    "Health check endpoints",
+    "Lifecycle event handling",
+    "Spring context integration"
+   ]
+  },
+  {
+   "name": "MetadataProcessor",
+   "structuralCluster": "dubbo-metadata",
+   "pathPrefixes": [
+    "dubbo-metadata/dubbo-metadata-processor/",
+    "dubbo-metadata/dubbo-metadata-report-nacos/"
+   ],
+   "fileCount": 55,
+   "prefixCoverage": 0.818,
+   "description": "Service metadata processing with annotation handling, protobuf support, and metadata storage backends.",
+   "responsibilities": [
+    "Annotation processing",
+    "Type metadata extraction",
+    "Protobuf definition building",
+    "Metadata storage integration",
+    "Metadata reporting"
+   ]
+  },
+  {
+   "name": "DynamicConfigCenter",
+   "structuralCluster": "dubbo-configcenter",
+   "pathPrefixes": [
+    "dubbo-configcenter/dubbo-configcenter-apollo/src/main/",
+    "dubbo-configcenter/dubbo-configcenter-file/src/main/",
+    "dubbo-configcenter/dubbo-configcenter-nacos/",
+    "dubbo-configcenter/dubbo-configcenter-zookeeper/"
+   ],
+   "fileCount": 15,
+   "prefixCoverage": 0.867,
+   "description": "Dynamic configuration management supporting multiple backends including Nacos, Apollo, Zookeeper, and filesystem.",
+   "responsibilities": [
+    "Configuration provider implementations",
+    "Dynamic config listener patterns",
+    "Backend-specific adapters",
+    "Config watch and refresh",
+    "Configuration caching"
+   ]
+  }
+ ],
+ "reviewHint": "Apache Dubbo maven modules: dubbo-rpc-* (protocols), dubbo-remoting-* (transport), dubbo-registry-* (service discovery), dubbo-cluster (LB/routing), dubbo-config-* (API/spring), dubbo-metadata-*, dubbo-common. GT should track the dubbo-<subsystem> module families."
+}

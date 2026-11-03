@@ -1,0 +1,228 @@
+{
+ "repo": "bitwarden-server",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:9062f14bb491346f timestamp=2026-07-07T13:10:44Z)",
+ "date": "2026-07-07",
+ "sha": "7b36f20e07ae2b883e4c7d09a249589d236b9679",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "CoreDomain",
+   "structuralCluster": "Core",
+   "pathPrefixes": [
+    "src/Core/",
+    "test/Core.Test/"
+   ],
+   "fileCount": 1876,
+   "prefixCoverage": 0.891,
+   "description": "Core domain entities, business logic, and repository interfaces for vault, organization, and user management.",
+   "responsibilities": [
+    "Entity models",
+    "Business logic services",
+    "Repository interfaces",
+    "Domain constants",
+    "Authentication handlers"
+   ]
+  },
+  {
+   "name": "ApiControllers",
+   "structuralCluster": "Api",
+   "pathPrefixes": [
+    "src/Api/",
+    "src/Core/Billing/",
+    "test/Core.Test/Billing/"
+   ],
+   "fileCount": 883,
+   "prefixCoverage": 0.843,
+   "description": "REST API layer providing HTTP controllers, routing, and validation for vault, organization, billing, and admin operations.",
+   "responsibilities": [
+    "HTTP controllers",
+    "Request validation",
+    "API routing",
+    "Response serialization",
+    "Authorization guards"
+   ]
+  },
+  {
+   "name": "TestUtilities",
+   "structuralCluster": "util",
+   "pathPrefixes": [
+    "util/"
+   ],
+   "fileCount": 821,
+   "prefixCoverage": 0.905,
+   "description": "Testing infrastructure including database seeding, fixtures, and integration test helpers.",
+   "responsibilities": [
+    "Database seeding",
+    "Test data generation",
+    "HTTP test utilities",
+    "AutoFixture configuration",
+    "Rust SDK bindings"
+   ]
+  },
+  {
+   "name": "DatabaseSchema",
+   "structuralCluster": "Sql",
+   "pathPrefixes": [
+    "src/Sql/"
+   ],
+   "fileCount": 635,
+   "prefixCoverage": 1.0,
+   "description": "SQL Server database schema with stored procedures, views, and table definitions.",
+   "responsibilities": [
+    "Stored procedures",
+    "Database views",
+    "Table definitions",
+    "Billing schemas",
+    "Schema indexing"
+   ]
+  },
+  {
+   "name": "EnterpriseFeatures",
+   "structuralCluster": "bitwarden_license",
+   "pathPrefixes": [
+    "bitwarden_license/",
+    "src/Core/SecretsManager/"
+   ],
+   "fileCount": 298,
+   "prefixCoverage": 0.946,
+   "description": "Enterprise features including Secrets Manager, provider administration, SCIM provisioning, and single sign-on.",
+   "responsibilities": [
+    "Secrets Manager",
+    "Provider administration",
+    "SCIM provisioning",
+    "Access policies",
+    "SSO authentication"
+   ]
+  },
+  {
+   "name": "EntityFrameworkData",
+   "structuralCluster": "Infrastructure.EntityFramework",
+   "pathPrefixes": [
+    "src/Infrastructure.EntityFramework/"
+   ],
+   "fileCount": 224,
+   "prefixCoverage": 0.911,
+   "description": "Entity Framework Core ORM implementation providing database persistence and repository patterns.",
+   "responsibilities": [
+    "Database context",
+    "Repository implementations",
+    "Entity configurations",
+    "Query execution",
+    "Change tracking"
+   ]
+  },
+  {
+   "name": "AdminConsole",
+   "structuralCluster": "Admin",
+   "pathPrefixes": [
+    "src/Admin/"
+   ],
+   "fileCount": 101,
+   "prefixCoverage": 0.881,
+   "description": "Administrative console for managing organizations, providers, and system configuration.",
+   "responsibilities": [
+    "Organization administration",
+    "Provider management",
+    "Billing configuration",
+    "System tools",
+    "Data export"
+   ]
+  },
+  {
+   "name": "IdentityServer",
+   "structuralCluster": "Identity",
+   "pathPrefixes": [
+    "src/Identity/",
+    "test/Identity.Test/IdentityServer/"
+   ],
+   "fileCount": 73,
+   "prefixCoverage": 0.959,
+   "description": "OAuth 2.0/OpenID Connect authentication server for user identity and device authorization.",
+   "responsibilities": [
+    "Token validation",
+    "Device authorization",
+    "Two-factor authentication",
+    "User profiles",
+    "Grant validation"
+   ]
+  },
+  {
+   "name": "SharedPlatform",
+   "structuralCluster": "Shared/Platform",
+   "pathPrefixes": [
+    "dev/",
+    "src/Icons/Models/",
+    "src/SharedWeb/Utilities/",
+    "test/Common/AutoFixture/",
+    "test/Common/MockedHttpClient/",
+    "test/Icons.Test/Models/"
+   ],
+   "fileCount": 68,
+   "prefixCoverage": 0.824,
+   "description": "Cross-cutting platform utilities for testing, icons, and shared service configuration.",
+   "responsibilities": [
+    "AutoFixture attributes",
+    "Icon models",
+    "Service extensions",
+    "Request logging",
+    "Test data builders"
+   ]
+  },
+  {
+   "name": "BillingEngine",
+   "structuralCluster": "Billing",
+   "pathPrefixes": [
+    "src/Billing/"
+   ],
+   "fileCount": 67,
+   "prefixCoverage": 0.806,
+   "description": "Payment processing with Stripe and PayPal integration for subscription and invoice management.",
+   "responsibilities": [
+    "Stripe integration",
+    "Webhook processing",
+    "Subscription management",
+    "Invoice handling",
+    "Payment event handlers"
+   ]
+  },
+  {
+   "name": "DapperDataAccess",
+   "structuralCluster": "Infrastructure.Dapper",
+   "pathPrefixes": [
+    "src/Infrastructure.Dapper/"
+   ],
+   "fileCount": 59,
+   "prefixCoverage": 1.0,
+   "description": "Dapper-based SQL data access layer for user, organization, and vault repository implementations.",
+   "responsibilities": [
+    "User repositories",
+    "Organization repositories",
+    "Collection repositories",
+    "SQL query execution",
+    "Bulk operations"
+   ]
+  },
+  {
+   "name": "RepositoryContracts",
+   "structuralCluster": "Infrastructure.IntegrationTest",
+   "pathPrefixes": [
+    "src/Core/Repositories/",
+    "src/Core/Resources/",
+    "test/Infrastructure.IntegrationTest/Comparers/"
+   ],
+   "fileCount": 21,
+   "prefixCoverage": 0.81,
+   "description": "Repository abstraction contracts and integration test infrastructure for data layer testing.",
+   "responsibilities": [
+    "Repository interfaces",
+    "Integration testing",
+    "Test repositories",
+    "Data layer contracts",
+    "Test data fixtures"
+   ]
+  }
+ ],
+ "reviewHint": "Bitwarden server: src/Core carries feature folders (Auth, Vault, Billing, AdminConsole, Tools, KeyManagement...), with thin hosts src/Api, src/Identity, src/Admin, src/Events*, src/Notifications. Feature truth mostly lives INSIDE src/Core/<Feature>/ \u2014 check prefixes reach into it rather than stopping at src/Core/."
+}

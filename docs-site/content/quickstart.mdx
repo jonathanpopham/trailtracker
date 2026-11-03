@@ -1,0 +1,232 @@
+---
+title: Quickstart
+description: Build TrailTracker from source and run brief, stats, extract, search, query, and export — with real outputs.
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Quickstart
+
+Every output on this page is real: it was captured by running the built binary
+against TrailTracker's own repository (350 files; Rust, Python, Bash, Apex, and
+Salesforce metadata). Because output is byte-deterministic, you can reproduce
+it exactly at the same commit.
+
+## Install
+
+There is no crates.io package or binary release yet; build from source.
+
+```bash
+git clone https://github.com/jonathanpopham/trailtracker.git
+cd trailtracker
+cargo build --release          # toolchain pinned to 1.90.0 via rust-toolchain.toml
+./target/release/trailtracker help
+```
+
+The runtime crate has nothing to fetch: its `[dependencies]` section in
+`Cargo.toml` is empty by policy (ADR-0001 — hand-rolled, std-only parsers).
+
+## First contact with a repo
+
+<Steps>
+
+### Orient: `brief`
+
+The recommended first call. A deterministic markdown model of the repo:
+languages, largest units, module dependency map, entry points, fan-in/fan-out
+hotspots, dependency cycles, and a plain-English synthesis.
+
+```bash
+trailtracker brief .
+```
+
+The synthesis paragraph from TrailTracker's own brief (0.63 s for 350 files /
+184,993 lines on an M-series laptop):
+
+> This repo is a polyglot codebase (mostly rust, 7 languages): 350 file(s),
+> 184993 line(s), modeled as 13335 nodes and 70406 edges. Its largest unit is
+> `src/lang/javascript/lower.rs` (File) with 95 symbol(s). Its code clusters
+> into 25 domains, led by lang, Shared/Platform, extract. […] The most
+> depended-upon symbol is `Node` (Type, src/core/cst.rs) (fan-in 1675) —
+> changes there ripple widest; `assign_domains` (Function,
+> src/extract/domains.rs) carries the most outbound complexity (fan-out 106).
+> Dependency cycles knot the file graph — see the cycles section before
+> refactoring.
+
+`--json` returns the same content as a structured `trailtracker.brief/v1`
+object.
+
+### Trust calibration: `stats`
+
+How much of the repo was actually understood? The numbers are designed to be
+checked, not trusted.
+
+```bash
+trailtracker stats .
+```
+
+```text
+TrailTracker analysis of .
+  files analyzed      350
+  lossless files      350 / 350  (all reconstruct source exactly)
+  parse error bytes   0 / 6550549 (0.00%)
+  parser diagnostics  0
+  parse failures      0 (no files crashed analysis)
+  graph nodes         13335
+    files             350
+    modules           733
+    functions         8644
+    types             744
+    constants         2196
+    external deps     22
+    unresolved syms   645
+  graph edges         70406
+    CONTAINS          1367
+    DECLARES          11599
+    CALLS             49222
+    IMPORTS           1604
+    DEPENDS_ON        22
+    USES_TYPE         4429
+    HAS_METHOD        2054
+    IMPLEMENTS        75
+  call resolution     resolved 19169  ambiguous 10765  external 19283
+    external          19283
+    global            2583
+    global_method     11850
+    import            423
+    local             4629
+    qualified         156
+    qualified_type    1624
+    receiver          8668
+    receiver_type     1
+```
+
+Note the `ambiguous 10765`: where a call can't be resolved to exactly one
+definition, TrailTracker reports the ambiguity instead of guessing. That
+honesty is load-bearing — see [Verification](/verification).
+
+### Derived views: `extract`
+
+Any of the [seven ontology extractors](/ontologies), as JSONL — one
+`{record: "node" | "edge", …}` object per line.
+
+```bash
+trailtracker extract domains .
+```
+
+```json
+{"id":"domain::lang","kind":"Module","name":"lang","properties":{"confidence":"medium","domain":"lang","file_count":134,"kind":"business","label":"lang","symbol_count":5765,"unit_count":33,"view":"domains"},"record":"node"}
+{"id":"domain::extract","kind":"Module","name":"extract","properties":{"confidence":"medium","domain":"extract","file_count":23,"kind":"business","label":"extract","symbol_count":505,"unit_count":3,"view":"domains"},"record":"node"}
+{"id":"domain::Shared/Platform","kind":"Module","name":"Shared/Platform","properties":{"confidence":"low","domain":"Shared/Platform","file_count":61,"kind":"business","label":"platform","symbol_count":994,"unit_count":10,"view":"domains"},"record":"node"}
+```
+
+<Callout type="info">
+  Domain membership is structural (dependency communities; symbol names are
+  never read) and labels are dominant path segments — on this repo `lang`,
+  `extract`, plus a low-confidence `Shared/Platform` catch-all it admits to.
+  Why membership is structural rather than lexical is exactly the story the
+  [benchmark page](/benchmark#vocabulary-vs-responsibility-the-domains-v3-story)
+  takes seriously.
+</Callout>
+
+### Ask the graph: `query`
+
+```bash
+trailtracker query blast-radius assign_domains .
+```
+
+```text
+blast-radius of fn::crate::extract::domains::assign_domains#800 — 643 node(s) affected
+  [File] file::eval/corpus/calc/src/lib.rs
+  [File] file::eval/corpus/calc/src/parser.rs
+  [File] file::eval/src/atlas.rs
+  [File] file::eval/src/bin/oracle.rs
+  …
+```
+
+Query kinds: `what-touches` (incoming edges), `uses` (outgoing edges),
+`blast-radius` (transitive reverse reachability), `deepest-flows`.
+
+### Search: hybrid, deterministic, explained
+
+BM25 + hash-embedding rank fusion (RRF), re-ranked by graph proximity. No LLM,
+no index server, and every hit says *why* it ranked where it did.
+
+```bash
+trailtracker search "lossless round trip" . --json --limit 2
+```
+
+```json
+{
+  "command": "search",
+  "dir": ".",
+  "query": "lossless round trip",
+  "results": [
+    {
+      "id": "fn::crate::lang::apex::tests::lossless_round_trip#68",
+      "kind": "Function",
+      "name": "lossless_round_trip",
+      "path": "",
+      "rank": 1,
+      "score": 0.035564663023679416,
+      "why": ["bm25 #1", "embed #1", "2 hops from lossless_round_trip"]
+    },
+    {
+      "id": "fn::crate::lang::dart::tests::lossless_round_trip#87",
+      "kind": "Function",
+      "name": "lossless_round_trip",
+      "path": "",
+      "rank": 2,
+      "score": 0.035035842293906806,
+      "why": ["bm25 #2", "embed #2", "2 hops from lossless_round_trip"]
+    }
+  ],
+  "schema": "trailtracker.search/v1",
+  "total": 2
+}
+```
+
+### Visualize: `export ontoloom`
+
+A single `{name, nodes, relationships}` document with a deterministic seed
+layout, loadable directly by the [Ontoloom](https://github.com/jonathanpopham/ontoloom)
+graph editor.
+
+```bash
+trailtracker export ontoloom . --view domains > domains.json
+```
+
+```json
+{"name":". (domains)","nodes":[{"caption":"Build & Tooling","id":"domain::Build & Tooling","labels":["Module","Build & Tooling"],"properties":{"confidence":"high","domain":"Build & Tooling","file_count":16,…},"x":0,"y":2520},…]}
+```
+
+### The machine-readable contract: `capabilities`
+
+```bash
+trailtracker capabilities
+```
+
+Returns the full CLI contract as JSON — commands, flags, output schemas, exit
+codes. The [CLI Reference](/cli-reference) page is generated from it.
+
+</Steps>
+
+## The output contract
+
+Every command accepts `--json` (synonym: `--robot`). stdout carries data only,
+stderr carries diagnostics only, and errors come as
+`trailtracker: <what went wrong>` plus a `fix:` line.
+
+| Exit code | Meaning |
+|---|---|
+| `0` | success |
+| `1` | doctor only: findings present (target or tool unhealthy) |
+| `2` | usage error (bad command, flag, or argument) |
+| `3` | path not found or unreadable |
+| `4` | analysis failure (internal error) |
+
+## Where next
+
+- [The Seven Ontologies](/ontologies) — what each extractor computes, with real output.
+- [Agents & MCP](/agents-mcp) — wire the engine into Claude Code as 17 tools.
+- [Verification](/verification) — why you can trust the numbers above.

@@ -1,0 +1,46 @@
+name: Release
+
+# CD: a version tag (`vX.Y.Z`) builds the portable std-only `trailtracker` CLI
+# natively on Linux, macOS, and Windows and attaches each binary to the GitHub
+# Release. (Phase 4 will also attach the per-build eval-state report.)
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: build · ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release binary
+        run: cargo build --release --bin trailtracker
+      - name: Package
+        shell: bash
+        run: |
+          if [ -f target/release/trailtracker.exe ]; then
+            asset="trailtracker-${{ matrix.os }}.exe"
+            cp target/release/trailtracker.exe "$asset"
+          else
+            asset="trailtracker-${{ matrix.os }}.tar.gz"
+            tar czf "$asset" -C target/release trailtracker
+          fi
+          echo "ASSET=$asset" >> "$GITHUB_ENV"
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ASSET }}

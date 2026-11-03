@@ -1,0 +1,190 @@
+{
+ "objects": [
+  "Booking__c",
+  "Case",
+  "Contact"
+ ],
+ "mutations": [
+  {
+   "op": "update",
+   "object": "Booking__c",
+   "fields": [
+    "Status__c"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Contact",
+   "fields": [
+    "Email",
+    "MailingCity"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Case",
+   "fields": [
+    "ContactId"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Case",
+   "fields": [
+    "Priority",
+    "Status"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Contact",
+   "fields": [
+    "AccountId"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Case",
+   "fields": [
+    "OwnerId",
+    "Status"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Booking__c",
+   "fields": [
+    "Status__c"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Booking__c",
+   "fields": [
+    "Contact__c",
+    "Guests__c"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Case",
+   "fields": [
+    "Priority"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Booking__c",
+   "fields": [
+    "Guests__c",
+    "Status__c"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Booking__c",
+   "fields": [
+    "Status__c"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Case",
+   "fields": [
+    "ContactId",
+    "Priority"
+   ]
+  },
+  {
+   "op": "update",
+   "object": "Contact",
+   "fields": [
+    "MailingCity"
+   ]
+  },
+  {
+   "op": "create",
+   "object": "Contact",
+   "fields": [
+    "AccountId",
+    "MailingCity"
+   ]
+  }
+ ],
+ "queries": [
+  {
+   "object": "Contact",
+   "fields": [
+    "Id",
+    "Email"
+   ]
+  },
+  {
+   "object": "Case",
+   "fields": [
+    "Id",
+    "Status"
+   ]
+  },
+  {
+   "object": "Booking__c",
+   "fields": [
+    "Id",
+    "Contact__c"
+   ]
+  },
+  {
+   "object": "Case",
+   "fields": [
+    "Id",
+    "Priority"
+   ]
+  },
+  {
+   "object": "Contact",
+   "fields": [
+    "Id",
+    "AccountId"
+   ]
+  },
+  {
+   "object": "Booking__c",
+   "fields": [
+    "Id",
+    "Contact__c"
+   ]
+  },
+  {
+   "object": "Contact",
+   "fields": [
+    "Id",
+    "AccountId"
+   ]
+  },
+  {
+   "object": "Case",
+   "fields": [
+    "Id",
+    "Status"
+   ]
+  }
+ ],
+ "calls": [
+  "Handler_11",
+  "Handler_17",
+  "Handler_23",
+  "Handler_29",
+  "Handler_35",
+  "Handler_41",
+  "Handler_5"
+ ],
+ "inputs": [
+  "recordId",
+  "runMode",
+  "batchSize"
+ ],
+ "outputs": [
+  "resultCode"
+ ],
+ "flow": "Mega_Intake_Orchestrator"
+}

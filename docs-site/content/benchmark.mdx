@@ -1,0 +1,163 @@
+---
+title: The Benchmark
+description: 11 real repos, 6 languages, dropout discipline, CI-gated acceptance criteria — and the honest vocabulary-vs-responsibility story behind domains-v3.
+---
+
+import { Callout } from 'nextra/components'
+
+# The Benchmark
+
+The ontology extractors are heuristic views. Heuristics drift, overfit, and
+flatter their authors — so TrailTracker treats the benchmark, not the demo, as
+the arbiter. The methodology is deliberately boring and verifiable, and one
+lane of the project has already been killed by its own eval
+(`benchmarks/FINDINGS.md`). The benchmark exists so claims die or survive on
+evidence.
+
+## The cohort: 11 repos, 6 languages
+
+Real codebases at pinned commits (`benchmarks/cohort.json`), not toy fixtures:
+
+| Repo | Language | Shape | Split |
+|---|---|---|---|
+| eShop | C# | DDD microservices, `Feature.Tier` naming | dev |
+| nopCommerce | C# | layered monolith, `Nop.*` | dev |
+| bitwarden-server | C# | security platform | dev |
+| nest | TypeScript | framework | dev |
+| jellyfin | C# | monolith, `Vendor.Feature` naming | holdout |
+| OrchardCore | C# | modular CMS | holdout |
+| Radarr | C# | `NzbDrone.*` | holdout |
+| django | Python | web framework | holdout |
+| hugo | Go | static site generator | holdout |
+| dubbo | Java | RPC framework (Spring-style) | holdout |
+| alacritty | Rust | terminal emulator | holdout |
+
+## Dropout discipline
+
+Development tunes against the **dev** repos only; the **holdout** repos are
+validated against, never tuned against. The rule is written into the quality
+backlog and enforced by review: an issue is only DONE when the benchmark
+passes on dev *and* holdout.
+
+This is not ceremony. It caught a real overfit: the original domain extractor
+keyed clusters off leading namespace segments. On eShop (`Ordering.API` →
+`Ordering`) that looks like it works; on jellyfin (`Jellyfin.LiveTv` →
+`Jellyfin`) it collapsed to one mega-domain — 100% of symbols in a single
+cluster. eShop hid the flaw; the holdout exposed it.
+
+## CI gate
+
+`benchmarks/ontology_bench.py --check` runs in CI
+(`.github/workflows/ontology-eval.yml`) with structural acceptance criteria:
+
+- a domain view must not **collapse** (one domain ≥ 50% of symbols) or shatter
+  into junk clusters, and
+- the layer view must be non-degenerate (≥ 2 core layers present).
+
+A change that regresses any cohort repo fails the build.
+
+Because clustering has no oracle — nobody can name the "correct" domain
+decomposition of an arbitrary codebase — five **metamorphic relations**
+(`eval/src/metamorphic.rs`) stand in for one: permutation invariance,
+consistent-rename stability, additive stability, scaffold-noise immunity, and
+whole-codebase duplication (domain set identical, every domain exactly
+doubled, top-share exactly preserved). See [Verification](/verification).
+
+## Where the numbers stand
+
+From `benchmarks/ontology_bench_results.json` (domains-v3, 2026-07-07):
+
+**Domains generalize across all six languages.** No collapse on any of the 11
+repos — top domain ≤ 49% of symbols, with counts varying naturally per repo
+(eShop 10, nopCommerce 3, jellyfin 13, hugo 10, dubbo 11, django 14, …) from a
+symbol-mass stopping rule, not a fixed cap. Membership is additionally scored
+**semantically** against frozen ground truth (`benchmarks/semantic_alignment.py`):
+macro-F1 **0.923** on the reviewed eShop truth, gated in CI with a 0.70 floor.
+This is one semantic fixture, not a general accuracy guarantee. Labels are structural names:
+
+| Repo | Top domain labels |
+|---|---|
+| eShop | ClientApp / Ordering / Catalog.API |
+| jellyfin | MediaBrowser.Controller / MediaBrowser.Model / Jellyfin.Api |
+| hugo | hugolib / resources / tpl |
+| django | django / django/db / forms_tests |
+| dubbo | dubbo / dubbo-config-api / dubbo-common |
+
+**Layers surface real violations** once inference moved from naming
+conventions to archetype mix: jellyfin Domain→Infrastructure ×244,
+bitwarden-server Application→Infrastructure ×487. (Before that change, layer
+assignment only fired on `.Domain`/`.Infrastructure`-style names and reported
+zero violations on all repos — a silent no-op the gate now prevents.)
+
+**Archetypes are strongest on C#/Java conventions** and were extended with
+language-scoped rules for Python/Go/Rust. Classified coverage, before → after
+the cross-language work:
+
+| Repo | Coverage before | Coverage after |
+|---|---|---|
+| django | 13.9% | **76.3%** |
+| hugo | 7.6% | 35.4% |
+| alacritty | 5.5% | 20.5% |
+| dubbo | 40.1% | 40.1% (Spring ≈ .NET conventions; unchanged by design) |
+
+Coverage still varies by language, and genuinely generic functions stay
+Unclassified by design.
+
+## Vocabulary vs responsibility: the domains-v3 story
+
+<Callout type="warning">
+  This section is the most important honesty note in these docs. The shape
+  gate above cannot catch the failure class described here.
+</Callout>
+
+A head-to-head was run on identical source (a 241-file TypeScript/Java API
+codebase) between TrailTracker's `extract domains` and an LLM-backed domain
+classifier (`benchmarks/domain_semantics_comparison.md`):
+
+- The **LLM-backed system** produced 4 domains with responsibilities:
+  ControlPlaneAPI (Authentication, Billing, JobOrchestration, …),
+  DashboardWebUI, DataPlaneAnalysis, ExternalIntegrations.
+- **TrailTracker** produced 17 clusters: File, Extract, Prefix, Build, Setup,
+  Generate, Node, Graph, …
+
+The diagnosis: lexical frequency measures **vocabulary**, not
+**responsibility**. On business software (eShop) code vocabulary happens to
+coincide with bounded contexts, so the method *appears* to work; on technical
+codebases the vocabulary is implementation nouns and the clusters are
+meaningless as domains. eShop hid the flaw; this repo exposed it. Notably, the
+LLM system's *top-level structure* roughly matched TrailTracker's
+deterministic unit/coupling structure — what the LLM added was responsibility
+grouping and naming.
+
+The decision that followed (domains-v3, shipped 2026-07-06):
+
+1. **Structural clustering** (units + dependency communities, hierarchical) —
+   membership byte-stable, airgap-pure; `extract domains` never reads symbol
+   names, so rename-invariance holds by construction;
+2. an **optional LLM naming pass** that labels clusters and writes
+   responsibilities — compiled out of shipped binaries entirely (it exists
+   only behind `cargo build --features enrich`, internal tooling); structure
+   untouched, so membership stays reproducible and names are attested
+   (model id + prompt hash);
+3. the lexical view kept as what it is — the `lexicon` extractor, a labeling
+   signal, not the product;
+4. a **semantic-quality benchmark** (`benchmarks/semantic_alignment.py`)
+   scoring cluster↔truth alignment against frozen ground truth, wired into the
+   CI gate with a 0.70 macro-F1 floor, because the shape gate can't catch this
+   failure class.
+
+All four shipped. The public semantic evaluation reports macro-F1 0.923
+on eShop's hand-derived truth.
+
+## The lane the benchmark killed
+
+An earlier lane used the graph to drive automated *rewrites* of workflows. Its
+own eval showed it didn't clear the bar, and it was retired
+(`benchmarks/FINDINGS.md`). This retired Salesforce assistance experiment is
+separate from the later Rust rewrite rules with per-application verification.
+
+## Where next
+
+- [Verification](/verification) — the gates below the benchmark: fuzzing,
+  metamorphic relations, goldens, Kani.
+- [The Seven Ontologies](/ontologies) — what these numbers are measuring.

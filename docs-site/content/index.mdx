@@ -1,0 +1,119 @@
+---
+title: TrailTracker
+description: A deterministic, airgap-safe, cross-language code-understanding engine. No LLM, no network, no dependencies.
+---
+
+import { Cards, Callout } from 'nextra/components'
+
+# TrailTracker
+
+**A deterministic, airgap-safe, cross-language code-understanding engine.**
+Point it at a repository and it emits a canonical code graph plus seven derived
+ontology views: no LLM, no network, no dependencies, and byte-identical output
+every run.
+
+```bash
+trailtracker brief ~/src/some-repo             # markdown model of an unfamiliar codebase
+trailtracker extract domains ~/src/some-repo   # business-domain clustering as JSONL
+trailtracker export ontoloom ~/src/some-repo   # load the graph into the Ontoloom editor
+```
+
+TrailTracker is built for environments where the usual tooling is off the
+table: airgapped hardware, no model access, supply chains treated as attack
+surface. The whole runtime is a single std-only Rust binary with **zero
+external crates** and `#![forbid(unsafe_code)]` enforced on every target.
+
+## What you get
+
+- **No LLM in the runtime.** Analysis is deterministic and auditable. Where a
+  call can't be resolved to exactly one definition, TrailTracker emits the
+  candidate set and the reason; it never guesses.
+- **Byte-stable.** The same input tree produces byte-identical output, on every
+  command, every time. Agents and diff-based tooling can cache and compare
+  results safely.
+- **Lossless parsing.** Every file round-trips exactly through the concrete
+  syntax tree; losslessness is fuzz-tested with 20,000 property cases per build
+  with additional bounded Kani checks for the Rust parser.
+- **Cross-language.** 58 hand-rolled language front ends, from C#, TypeScript,
+  Python, Go, Java, and Rust to COBOL, Fortran, VHDL, and Apex, all lowering
+  into one shared IR.
+- **Fast enough to be interactive.** dotnet/eShop (540 files, 527 of them C#)
+  becomes a 4,130-node / 9,775-edge graph in 0.077 s.
+
+## Why
+
+Inherited codebases are read far more than they are written, and the hard part
+is the first read: what are the domains, the layers, the entry points, the
+load-bearing symbols? LLMs help when you can use them, but they don't run on
+airgapped defense hardware, they can't hold a 2,000-file repo in context, and
+their answers aren't reproducible or auditable.
+
+TrailTracker takes the other lane: a deterministic pipeline that turns source
+text into a graph you can query, brief, cluster, and visualize, with provenance
+on every edge. It is the analysis layer; what consumes it can be a human, a
+query engine, or an agent over MCP.
+
+## How it works
+
+```
+source tree
+    │  58 hand-rolled front ends (lexer + parser), std-only
+    ▼
+lossless CST          every byte accounted for; round-trip verified
+    │  lower
+    ▼
+Atlas IR              one shared, language-neutral ontology
+    │
+    ▼
+canonical graph       File/Module/Function/Type/… nodes,
+    │                 CONTAINS/CALLS/IMPORTS/USES_TYPE/… edges (JSONL)
+    ▼
+extractors            seven deterministic derived views
+    │
+    ▼
+outputs               JSONL · Ontoloom wire JSON · markdown briefs · queries · search
+```
+
+Extractors are pure functions of the base graph: they never read the source or
+the CST, and the same base graph always linearizes to byte-identical JSONL.
+
+<Cards>
+  <Cards.Card title="Quickstart" href="/quickstart" arrow />
+  <Cards.Card title="The Seven Ontologies" href="/ontologies" arrow />
+  <Cards.Card title="The Benchmark" href="/benchmark" arrow />
+  <Cards.Card title="Verification" href="/verification" arrow />
+  <Cards.Card title="Agents & MCP" href="/agents-mcp" arrow />
+  <Cards.Card title="CLI Reference" href="/cli-reference" arrow />
+</Cards>
+
+## What TrailTracker is NOT
+
+<Callout type="warning">
+  Read this section before adopting the tool. The limits below are design
+  decisions or honest current state, not roadmap apologies.
+</Callout>
+
+- **Not an LLM tool.** No model calls, no embeddings-as-a-service, no network
+  I/O in the default analysis build. Optional `enrich` builds invoke a model. It pairs well with LLM agents
+  (that's what the [MCP server](/agents-mcp) is for), but the engine itself is
+  deterministic code all the way down.
+- **Scoped rewrites.** Rust rewrite rules use a propose/verify/apply workflow
+  with explicit assumptions. An earlier Salesforce rewrite-assistance experiment
+  was retired after evaluation (`benchmarks/FINDINGS.md`).
+- **Not a compiler or type checker.** Resolution is conservative by design:
+  ambiguity is preserved and reported, never resolved by guesswork. If you need
+  full semantic analysis, use the language's own toolchain.
+- **Ontologies are heuristic, and say so.** Domains, archetypes, and layers are
+  benchmarked views with published acceptance criteria, not ground truth.
+  Archetype coverage is materially better on C#/Java than on Go/Rust today; the
+  [benchmark page](/benchmark) carries the honest numbers.
+- **Language depth varies.** All 58 front ends parse losslessly, but the
+  ontology stack is validated on the 6 benchmark languages; the `parse` command
+  (raw CST dump) currently takes Rust files only.
+
+## Status
+
+There is no crates.io package or binary release yet; build from source (see
+[Quickstart](/quickstart)). The public licensing choice is pending. All rights remain reserved in this preview. Outside contributions are
+not accepted, though bug reports are welcome — see the repository README for
+the reasoning.

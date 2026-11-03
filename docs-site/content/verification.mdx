@@ -1,0 +1,139 @@
+---
+title: Verification
+description: The gate lattice — property fuzzing, structure-aware extractor fuzzing, metamorphic relations, golden snapshots, self-analysis, and Kani bounded proof.
+---
+
+import { Callout } from 'nextra/components'
+
+# Verification
+
+TrailTracker uses build-time checks to catch regressions. It is experimental
+developer tooling, not a certified safety-critical analysis product. Verification runs at build/CI time and none of
+it enters the deployed artifact: the shipped binary stays std-only,
+dependency-free, and `#![forbid(unsafe_code)]`. A cargo workspace keeps this
+clean — the runtime crate is zero-dep; a separate, never-shipped `eval` member
+holds the entire harness.
+
+`scripts/verify.sh` is the single entrypoint, and CI runs the same steps. The
+gate produces a **hash-attestable JSON report** carrying the results and the
+SHA-256 of the built binary; the report's own SHA-256 is printed for
+attestation, and a non-zero exit blocks CI.
+
+## The gate lattice
+
+```
+                    every build (scripts/verify.sh, CI)
+  ┌────────────────────────────────────────────────────────────┐
+  │ fmt + clippy(-D warnings)                                  │
+  │ full workspace test suite                                  │
+  │ property/fuzz harness      20,000 cases per run            │
+  │ self-analysis regression   run twice, byte-identical       │
+  │ golden corpus snapshots    frozen known-good graphs        │
+  │ hash-attestable report     SHA-256 of binary + results     │
+  └────────────────────────────────────────────────────────────┘
+                    beyond the gate
+  ┌────────────────────────────────────────────────────────────┐
+  │ metamorphic relations      5 MRs over the extractors       │
+  │ Kani bounded checks        Rust, selected ASCII ≤ 5    │
+  │ canonical-parser diffing   vs python ast, go/parser, tsc…  │
+  │ ontology benchmark         11 repos, CI-gated (see below)  │
+  └────────────────────────────────────────────────────────────┘
+```
+
+### Property/fuzz harness
+
+`eval/src/property.rs` is hermetic: its own deterministic xorshift PRNG and
+generators (random bytes, token soup, real-source mutations) — 20,000 cases
+per run asserting the universal invariants:
+
+- **no panic** on any input,
+- **lossless round-trip** — the CST reconstructs the source exactly,
+- **deterministic output** — same input, same bytes.
+
+Failures are seed-reproducible. A second, structure-aware harness
+(`eval/src/fuzz_extractors.rs`) fuzzes the ontology extractors on synthetic
+graphs with the same never-panic, always-byte-stable contract.
+
+### Metamorphic relations
+
+The extractors have no oracle — nobody can name the "correct" clustering of an
+arbitrary codebase — so `eval/src/metamorphic.rs` encodes five relations that
+must hold instead of a right answer:
+
+1. **Permutation invariance** — permute file discovery order → byte-identical
+   output.
+2. **Consistent-rename stability** — rename a symbol consistently → domains,
+   archetypes, and layers unchanged.
+3. **Additive stability** — add a file carrying domain X's concept → X does
+   not collapse, no junk domain appears.
+4. **Scaffold-noise immunity** — inject scaffold/generated noise → no new
+   domains.
+5. **Whole-codebase duplication** — duplicate the entire codebase → domain set
+   identical, every domain exactly doubled, top-share exactly preserved.
+
+MR5 is asserted *strict*, and it has already earned its keep: an absolute
+minimum-file-count threshold in domain seeding broke exact duplication
+doubling and was replaced by a ratio-only stopping rule.
+
+### Self-analysis regression
+
+`eval/src/regression.rs` runs TrailTracker on its own repository twice and
+asserts: 100% lossless files, zero parse-error bytes, zero parse failures, and
+byte-identical output across runs, plus plausibility lower bounds on the graph.
+Determinism is not a claim; it is a regression test that runs on every build.
+
+### Golden corpus snapshots
+
+Vendored fixture repos with frozen known-good graphs. Any change to output
+bytes must be intentional and reviewed — accidental drift fails the gate.
+
+### Kani bounded proof
+
+`eval/src/kani_proofs.rs` is compiled only under `#[cfg(kani)]`. Its parser
+harness checks the Rust parser on strings of at most five characters drawn
+from a selected ASCII alphabet. It does not prove semantic correctness or
+losslessness of every frontend. Rewrite harnesses check small semantic models
+under the assumptions recorded in the certificate design. Kani is optional
+locally and its current CI job is non-blocking.
+
+### Canonical-parser diffing
+
+Hand-rolled parsers can silently diverge from what a language actually means.
+The accuracy oracle (`.github/workflows/verify-languages.yml`) diffs
+TrailTracker's definition set, per language, against the language's *real*
+parser — Python `ast`, Ruby `Ripper`, `go/parser`, `tsc`, `universal-ctags` —
+on a real repo. Tier A jobs gate at **zero unexplained diffs**: fix the bug,
+or allowlist a genuine parser-vs-parser difference with a written reason.
+
+<Callout type="info">
+  Those external parsers live only in the never-shipped `eval` crate and CI.
+  This is the deal struck by ADR-0001: hand-rolled parsers buy zero runtime
+  dependencies, no FFI, and a provable losslessness invariant; the accuracy
+  cost is bought down by diffing against ground truth where it can't
+  contaminate the artifact.
+</Callout>
+
+### The ontology benchmark
+
+The last gate is behavioral rather than mechanical: the 11-repo,
+6-language cohort with dropout discipline and structural acceptance criteria,
+run in CI on every change to the extractors. It gets
+[its own page](/benchmark).
+
+## Why this much machinery
+
+Two reasons, both structural:
+
+1. **The target deployment context can be airgapped.** Nothing can be
+   patched quickly, nothing can phone home, and a reviewer needs evidence, not
+   assurances — hence the hash-attestable report and the bounded proof.
+2. **Determinism is the product.** Agents and diff-based tooling cache and
+   compare TrailTracker output. One nondeterministic iteration order anywhere
+   breaks that contract, so byte-identity is asserted at three independent
+   levels (property harness, self-analysis, MR1).
+
+## Where next
+
+- [The Benchmark](/benchmark) — the behavioral gate in detail.
+- [Quickstart](/quickstart) — `trailtracker stats` shows you the same honesty
+  at run time.

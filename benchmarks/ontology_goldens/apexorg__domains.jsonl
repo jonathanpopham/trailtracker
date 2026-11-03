@@ -1,0 +1,14 @@
+{"id":"domain::classes","kind":"Module","name":"classes","properties":{"confidence":"high","domain":"classes","file_count":3,"kind":"business","label":"classes","symbol_count":14,"unit_count":1,"view":"domains"},"record":"node"}
+{"id":"domain::triggers","kind":"Module","name":"triggers","properties":{"confidence":"high","domain":"triggers","file_count":1,"kind":"business","label":"triggers","symbol_count":1,"unit_count":1,"view":"domains"},"record":"node"}
+{"id":"subdomain::classes::classes","kind":"Module","name":"classes","properties":{"domain":"classes","file_count":3,"subdomain":"classes","symbol_count":14,"view":"domains"},"record":"node"}
+{"id":"subdomain::triggers::triggers","kind":"Module","name":"triggers","properties":{"domain":"triggers","file_count":1,"subdomain":"triggers","symbol_count":1,"view":"domains"},"record":"node"}
+{"id":"unit::force-app/main/default/classes/CaseService.cls","kind":"File","name":"CaseService.cls","properties":{"domain":"classes","path":"force-app/main/default/classes/CaseService.cls","symbol_count":4,"unit":"classes","view":"domains"},"record":"node"}
+{"id":"unit::force-app/main/default/classes/ContactVerification.cls","kind":"File","name":"ContactVerification.cls","properties":{"domain":"classes","path":"force-app/main/default/classes/ContactVerification.cls","symbol_count":5,"unit":"classes","view":"domains"},"record":"node"}
+{"id":"unit::force-app/main/default/classes/ReferralQueries.cls","kind":"File","name":"ReferralQueries.cls","properties":{"domain":"classes","path":"force-app/main/default/classes/ReferralQueries.cls","symbol_count":5,"unit":"classes","view":"domains"},"record":"node"}
+{"id":"unit::force-app/main/default/triggers/CaseTrigger.trigger","kind":"File","name":"CaseTrigger.trigger","properties":{"domain":"triggers","path":"force-app/main/default/triggers/CaseTrigger.trigger","symbol_count":1,"unit":"triggers","view":"domains"},"record":"node"}
+{"from":"domain::classes","kind":"CONTAINS","properties":{},"record":"edge","to":"subdomain::classes::classes"}
+{"from":"domain::classes","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::force-app/main/default/classes/CaseService.cls"}
+{"from":"domain::classes","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::force-app/main/default/classes/ContactVerification.cls"}
+{"from":"domain::classes","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::force-app/main/default/classes/ReferralQueries.cls"}
+{"from":"domain::triggers","kind":"CONTAINS","properties":{},"record":"edge","to":"subdomain::triggers::triggers"}
+{"from":"domain::triggers","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::force-app/main/default/triggers/CaseTrigger.trigger"}

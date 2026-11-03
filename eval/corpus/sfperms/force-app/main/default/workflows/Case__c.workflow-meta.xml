@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <rules>
+        <fullName>Escalate High Severity</fullName>
+        <active>true</active>
+        <criteriaItems>
+            <field>Case__c.Severity__c</field>
+            <operation>equals</operation>
+            <value>High</value>
+        </criteriaItems>
+        <actions>
+            <name>Set_Priority_Urgent</name>
+            <type>FieldUpdate</type>
+        </actions>
+    </rules>
+    <fieldUpdates>
+        <fullName>Set_Priority_Urgent</fullName>
+        <field>Priority__c</field>
+        <targetObject>Case__c</targetObject>
+        <literalValue>Urgent</literalValue>
+        <name>Set Priority Urgent</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+    </fieldUpdates>
+</Workflow>

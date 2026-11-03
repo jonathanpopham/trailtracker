@@ -1,0 +1,37 @@
+{
+ "flow": "Create_Booking",
+ "_note": "Hand-labeled from raw XML; CORRECTED 2026-07-04 after the pilot showed the lookup's <queriedFields> (Id/Experience_Name__c/Date__c) which the first label missed \u2014 a hand-labeling error our own extractor did NOT make.",
+ "objects": [
+  "Booking__c"
+ ],
+ "mutations": [
+  {
+   "op": "create",
+   "object": "Booking__c",
+   "fields": [
+    "Contact__c",
+    "Number_of_Guests__c",
+    "Session__c"
+   ]
+  }
+ ],
+ "queries": [
+  {
+   "object": "Booking__c",
+   "fields": [
+    "Id",
+    "Experience_Name__c",
+    "Date__c"
+   ]
+  }
+ ],
+ "calls": [],
+ "inputs": [
+  "contactId",
+  "sessionId",
+  "numberOfGuests"
+ ],
+ "outputs": [
+  "createdBooking"
+ ]
+}

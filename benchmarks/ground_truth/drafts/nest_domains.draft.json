@@ -1,0 +1,86 @@
+{
+ "repo": "nest",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:b198d7c5c1fc1487 timestamp=2026-07-07T13:11:12Z)",
+ "date": "2026-07-07",
+ "sha": "5f2e2552399896e3e1b1ebde1e48a40718ffd1f2",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "CoreFramework",
+   "structuralCluster": "core",
+   "pathPrefixes": [
+    "packages/common/",
+    "packages/core/",
+    "packages/websockets/"
+   ],
+   "fileCount": 683,
+   "prefixCoverage": 0.824,
+   "description": "NestJS framework runtime providing dependency injection, HTTP adapters, module system, and application lifecycle management.",
+   "responsibilities": [
+    "Dependency injection",
+    "Module system",
+    "HTTP adapter management",
+    "Application configuration",
+    "Logger services",
+    "Container management"
+   ]
+  },
+  {
+   "name": "IntegrationTests",
+   "structuralCluster": "integration",
+   "pathPrefixes": [
+    "integration/"
+   ],
+   "fileCount": 448,
+   "prefixCoverage": 1.0,
+   "description": "Integration test suite and examples demonstrating microservices, dependency scoping, GraphQL, inspector, and REPL functionality.",
+   "responsibilities": [
+    "Protocol testing",
+    "Microservice examples",
+    "Dependency scoping verification",
+    "Inspector integration",
+    "End-to-end scenarios",
+    "Framework feature validation"
+   ]
+  },
+  {
+   "name": "SampleApplications",
+   "structuralCluster": "sample",
+   "pathPrefixes": [
+    "sample/"
+   ],
+   "fileCount": 382,
+   "prefixCoverage": 1.0,
+   "description": "Sample applications showcasing NestJS features including GraphQL, gRPC, Mongoose, Fastify, and federation patterns.",
+   "responsibilities": [
+    "GraphQL implementations",
+    "Database integration examples",
+    "Alternate platform adapters",
+    "Federation patterns",
+    "Real-world use cases",
+    "Feature demonstrations"
+   ]
+  },
+  {
+   "name": "MicroservicesTransport",
+   "structuralCluster": "microservices",
+   "pathPrefixes": [
+    "packages/microservices/"
+   ],
+   "fileCount": 201,
+   "prefixCoverage": 0.965,
+   "description": "Microservices communication layer supporting multiple message protocols including Kafka, RabbitMQ, MQTT, gRPC, and NATS.",
+   "responsibilities": [
+    "Protocol client implementations",
+    "Server implementations",
+    "Message broker abstraction",
+    "Remote service communication",
+    "Event handling",
+    "Transport factories"
+   ]
+  }
+ ],
+ "reviewHint": "NestJS is a packages/* monorepo: core (DI/runtime), common (decorators/interfaces), microservices, websockets, platform-express / platform-fastify (HTTP adapters), testing. Domain boundaries should track packages/<name>/."
+}

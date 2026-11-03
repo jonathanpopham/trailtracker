@@ -1,0 +1,9 @@
+# Every change requires review by the code owner before merge.
+* @jonathanpopham
+
+# Golden snapshots and the eval harness are the regression contract for a
+# safety-critical analyzer — they must never be re-blessed without explicit
+# owner review of the diff.
+/eval/golden/   @jonathanpopham
+/eval/          @jonathanpopham
+/.github/       @jonathanpopham

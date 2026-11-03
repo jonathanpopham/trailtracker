@@ -1,0 +1,122 @@
+== redundant-clone-elim, end to end ==
+binary : trailtracker 0.1.0
+fixture: workdir/config.rs (copied from fixture/config.rs)
+
+-- 1. propose: analyze, emit the diff + a hash-bound proposal + cert ----
+
+$ trailtracker rewrite propose redundant-clone-elim config.rs workdir -o workdir/proposal.json
+rewrite: rejected bytes 798..806: cloned_value_read_later — `base` is read after the clone on some path: DATA_DEP var=base -> stmt::merge#17::0 from {stmt::merge#17::3} — the clone is not the last use
+rewrite: proposal written to workdir/proposal.json
+rewrite: certificate written to workdir/proposal.cert.json (fnv1a64:be60d83b3bf4172d)
+--- a/config.rs
++++ b/config.rs
+@@ -8,7 +8,7 @@
+ /// The redundant clone: `raw` is dead after the copy.
+ pub fn build(raw: String) -> Settings {
+     let raw = raw;
+-    let owned = raw.clone();
++    let owned = raw;
+     Settings::parse(owned)
+ }
+
+(exit 0)
+
+-- 2. the certificate: the last-use proof, machine-checkable -----------
+
+$ python3 -m json.tool workdir/proposal.cert.json
+{
+    "after_cpg_hash": "fnv1a64:ca7fd035550aa9b1",
+    "after_fingerprint": "fnv1a64:19fd3ec6f5d5282d",
+    "assumptions": [
+        "conservative may-reach def-use: DATA_DEP is may-reach, not must-reach; cut equality is equality of conservative sets",
+        "no aliasing analysis: `x.f = v` and `*p = v` are reads, never definitions or kills",
+        "side-effect and panic ORDER within collapsed regions is per-rule: dead-branch deletes only unreachable code; loop-to-iterator reuses the original expressions verbatim in the original per-element order; extract-function relocates the statements verbatim behind an immediately-executed call",
+        "statement grain: sub-statement corruption is caught by the licensed-emission replay, not the graph checks",
+        "closure-parameter shadow reads: names bound inside a collapsed region may re-read same-named outer definitions at statement grain; these add conservative may-deps only and are licensed when they target a surviving definition of that name",
+        "model fidelity: where a Kani harness exists it proves the schema over a bounded model; the model-to-Rust mapping is a recorded argument, not a machine-checked fact",
+        "the after text must parse cleanly; certification refuses diagnostics rather than guessing",
+        "Clone/Drop trait contract (redundant-clone-elim): `Clone::clone`'s only observable effect is producing the owned copy and `Drop` releases exactly what `Clone` acquired; eliminating a proven-last-use clone moves the original's drop from the cloned binding's scope end to the moved-to binding's drop point \u2014 programs observing clone side effects or the drop ORDER of clone-eliminated values are outside the model"
+    ],
+    "before_cpg_hash": "fnv1a64:294e1b96fe5b185a",
+    "before_fingerprint": "fnv1a64:881889b2881ce321",
+    "cert_hash": "fnv1a64:be60d83b3bf4172d",
+    "checks": [
+        "fn `fn::build#9` [redundant-clone-elim]: 1 site(s) re-derived as proven last uses (`raw` at s1 (def s0)); no reader of any cloned binding is CFG-reachable after its site; after CPG identical to before under the 1:1 statement mapping \u2014 FLOWS_TO and DATA_DEP unchanged, only the `.clone()` call text deleted",
+        "replayed licensed emission: 1 edit(s) byte-identical to this binary's recognizer+emitter output for the original file"
+    ],
+    "dir": "workdir",
+    "file": "config.rs",
+    "functions": {
+        "affected": [
+            "fn::build#9"
+        ],
+        "unaffected_verified": 4
+    },
+    "proposal_hash": "fnv1a64:80fd8cbbdc650c4c",
+    "rule": {
+        "id": "redundant-clone-elim",
+        "version": "1"
+    },
+    "schema": "trailtracker.rewrite-cert/v1",
+    "schema_obligation": {
+        "kani": "k3c_clone_elim_schema",
+        "ref": "docs/decisions/0007-equivalence-certificates.md#redundant-clone-elim-v1--licensed-remapping"
+    }
+}
+
+-- 3. the decoy: merge() clones base but reads it later ----------------
+   propose reports the refused site instead of rewriting it:
+
+$ trailtracker rewrite propose redundant-clone-elim config.rs workdir --json | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d[\"rejections\"], indent=2))"
+rewrite: rejected bytes 798..806: cloned_value_read_later — `base` is read after the clone on some path: DATA_DEP var=base -> stmt::merge#17::0 from {stmt::merge#17::3} — the clone is not the last use
+rewrite: certified (2 check(s), fnv1a64:be60d83b3bf4172d)
+[
+  {
+    "detail": "`base` is read after the clone on some path: DATA_DEP var=base -> stmt::merge#17::0 from {stmt::merge#17::3} \u2014 the clone is not the last use",
+    "reason": "cloned_value_read_later",
+    "span": {
+      "end": 806,
+      "start": 798
+    }
+  }
+]
+
+-- 4. verify: the INDEPENDENT check ------------------------------------
+
+$ trailtracker rewrite verify --proposal workdir/proposal.json
+VERIFIED redundant-clone-elim v1 on workdir/config.rs (1 edit(s))
+  proposal    fnv1a64:80fd8cbbdc650c4c
+  before      fnv1a64:881889b2881ce321
+  after       fnv1a64:19fd3ec6f5d5282d
+  cpg before  fnv1a64:294e1b96fe5b185a
+  cpg after   fnv1a64:ca7fd035550aa9b1
+  obligation  docs/decisions/0007-equivalence-certificates.md#redundant-clone-elim-v1--licensed-remapping (k3c_clone_elim_schema)
+  functions   1 affected, 4 unaffected re-verified
+  check       fn `fn::build#9` [redundant-clone-elim]: 1 site(s) re-derived as proven last uses (`raw` at s1 (def s0)); no reader of any cloned binding is CFG-reachable after its site; after CPG identical to before under the 1:1 statement mapping — FLOWS_TO and DATA_DEP unchanged, only the `.clone()` call text deleted
+  check       replayed licensed emission: 1 edit(s) byte-identical to this binary's recognizer+emitter output for the original file
+  assumptions 8 (see certificate document)
+  cert        fnv1a64:be60d83b3bf4172d
+(exit 0)
+
+-- 5. apply: the only writing path, certified BY DEFAULT ----------------
+
+$ trailtracker rewrite apply --proposal workdir/proposal.json
+applied 1 edit(s) to workdir/config.rs (redundant-clone-elim v1, certified fnv1a64:be60d83b3bf4172d)
+(exit 0)
+
+$ sed -n "10,14p" workdir/config.rs
+    let raw = raw;
+    let owned = raw;
+    Settings::parse(owned)
+}
+
+
+-- 6. re-verify: the spent proposal has self-invalidated ----------------
+
+$ trailtracker rewrite verify --proposal workdir/proposal.json
+trailtracker: equivalence verification FAILED for workdir/config.rs: file_fingerprint_mismatch: the file is fnv1a64:19fd3ec6f5d5282d but the proposal expects fnv1a64:881889b2881ce321
+  fix: the proposal is not a certified-safe application of redundant-clone-elim v1; re-run `trailtracker rewrite propose` and review a fresh proposal.
+(exit 4)
+
+== done: proposed, certified, independently verified, decoy refused, ==
+==       applied under the default certificate gate, self-invalidated ==

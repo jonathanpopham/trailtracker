@@ -1,0 +1,35 @@
+{
+ "repo": "eShop",
+ "source": "Hand-derived from dotnet/eShop's public architecture (README + src/ layout at cohort SHA 9b4f943), 2026-07-06. Path-based and objective — no LLM involved.",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "domains": [
+  {
+   "name": "Ordering",
+   "pathPrefixes": ["src/Ordering."]
+  },
+  {
+   "name": "Basket",
+   "pathPrefixes": ["src/Basket.API/", "tests/Basket.UnitTests/"]
+  },
+  {
+   "name": "Catalog",
+   "pathPrefixes": ["src/Catalog."]
+  },
+  {
+   "name": "Identity",
+   "pathPrefixes": ["src/Identity.API/"]
+  },
+  {
+   "name": "Webhooks",
+   "pathPrefixes": ["src/Webhooks.API/", "src/WebhookClient/"]
+  },
+  {
+   "name": "WebAppsClients",
+   "pathPrefixes": ["src/WebApp/", "src/WebAppComponents/", "src/ClientApp/", "src/HybridApp/"]
+  },
+  {
+   "name": "Platform",
+   "pathPrefixes": ["src/EventBus", "src/IntegrationEventLogEF/", "src/eShop.ServiceDefaults/", "src/eShop.AppHost/"]
+  }
+ ]
+}

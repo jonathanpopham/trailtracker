@@ -1,0 +1,49 @@
+# Verification corpus — one real repo per language for the CI ground-truth matrix.
+# Format (tab-separated): lang	oracle	tier	repo	ref
+#   oracle: ast | ripper | goparser | tsnode | ctags
+#           (Tier A canonical = gated to 0-diff; Tier B ctags/tsnode-js = report-only/coarse)
+#   ref:    empty = default branch; pin to the captured SHA after a clean run.
+#
+# ctags supports 38 of our 56. The 38 below have confident corpus repos and run
+# all at once on GitHub's parallel runners. NOT ctags-supported
+# (Tier C, need canonical adapters): apl crystal cypher dart fsharp graphql groovy
+# mojo nim nix prolog scala smalltalk solidity swift visualbasic wasm zig.
+#
+python	ast	A	https://github.com/django/django
+go	goparser	A	https://github.com/gin-gonic/gin
+ruby	ripper	B	https://github.com/rails/rails
+java	ctags	B	https://github.com/google/gson
+c	ctags	B	https://github.com/antirez/sds
+cpp	ctags	B	https://github.com/nlohmann/json
+lua	ctags	B	https://github.com/kikito/middleclass
+rust	ctags	B	https://github.com/BurntSushi/ripgrep
+php	ctags	B	https://github.com/laravel/framework
+perl	ctags	B	https://github.com/mojolicious/mojo
+typescript	tsnode	B	https://github.com/colinhacks/zod
+javascript	tsnode	A	https://github.com/expressjs/express
+elixir	ctags	B	https://github.com/elixir-lang/elixir
+erlang	ctags	B	https://github.com/ninenines/cowboy
+r	ctags	B	https://github.com/tidyverse/dplyr
+csharp	ctags	B	https://github.com/AutoMapper/AutoMapper
+kotlin	ctags	B	https://github.com/Kotlin/kotlinx.coroutines
+clojure	ctags	B	https://github.com/ring-clojure/ring
+elm	ctags	B	https://github.com/elm/core
+julia	ctags	B	https://github.com/FluxML/Flux.jl
+fortran	ctags	B	https://github.com/fortran-lang/stdlib
+d	ctags	B	https://github.com/dlang/phobos
+ocaml	ctags	B	https://github.com/ocaml/dune
+bash	ctags	B	https://github.com/ohmyzsh/ohmyzsh
+objc	ctags	B	https://github.com/AFNetworking/AFNetworking
+haskell	ctags	B	https://github.com/jgm/pandoc
+tcl	ctags	B	https://github.com/tcltk/tcllib
+powershell	ctags	B	https://github.com/dahlbyk/posh-git
+ada	ctags	B	https://github.com/AdaCore/Ada_Drivers_Library
+asm	ctags	B	https://github.com/pret/pokered
+awk	ctags	B	https://github.com/e36freak/awk-libs
+cobol	ctags	B	https://github.com/aws-samples/aws-mainframe-modernization-carddemo
+forth	ctags	B	https://github.com/gerryjackson/forth2012-test-suite
+lisp	ctags	B	https://github.com/norvig/paip-lisp
+pascal	ctags	B	https://github.com/castle-engine/castle-engine
+sql	ctags	B	https://github.com/lerocha/chinook-database
+verilog	ctags	B	https://github.com/ZipCPU/zipcpu
+vhdl	ctags	B	https://github.com/stnolting/neorv32

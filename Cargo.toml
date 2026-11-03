@@ -1,0 +1,44 @@
+# Workspace: the `trailtracker` runtime crate is std-only and ships. The `eval`
+# member is development/CI tooling — it never ships into the airgap and so is
+# free of the runtime dependency policy. It still happens to be std-only here.
+[workspace]
+members = ["eval"]
+# The eval corpus holds vendored crates used as regression *fixtures*. They are
+# analyzed as source text, never compiled — exclude them so cargo does not try to
+# build them (e.g. `calc` references an unvendored `serde` on purpose, to exercise
+# external-dependency detection).
+exclude = ["eval/corpus"]
+resolver = "2"
+
+[package]
+name = "trailtracker"
+version = "0.1.0"
+edition = "2021"
+description = "Local, std-only, airgap-safe code ontology and graph extractor"
+license = "UNLICENSED"
+repository = "https://github.com/jonathanpopham/trailtracker"
+readme = "README.md"
+
+[lints.rust]
+# Airtight memory-safety guarantee: forbids `unsafe` in EVERY target of this
+# package (lib, bin, tests/, examples/), not just the crate roots that carry
+# `#![forbid(unsafe_code)]`. Both layers are deliberate belt-and-suspenders.
+unsafe_code = "forbid"
+
+[lib]
+name = "trailtracker"
+path = "src/lib.rs"
+
+[[bin]]
+name = "trailtracker"
+path = "src/main.rs"
+
+[dependencies]
+# std-only by design. external dependencies are a supply-chain surface and are forbidden.
+
+[features]
+# enrich = optional LLM naming pass, NEVER in shipped/airgap builds, internal
+# tooling only via `cargo build --features enrich`. The DEFAULT build contains
+# zero code that invokes any model or spawns the `claude` CLI: the enrich
+# module, its command, and the dossier's --enrich path do not exist in it.
+enrich = []

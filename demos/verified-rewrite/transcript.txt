@@ -1,0 +1,174 @@
+== verified rewrite, end to end ==
+binary : trailtracker 0.1.0
+fixture: workdir/orders.rs (copied from fixture/orders.rs)
+
+-- 1. propose: analyze, emit the diff + a hash-bound proposal ----------
+   propose NEVER writes source; -o also writes the equivalence
+   certificate beside the proposal (proposal.cert.json).
+
+$ trailtracker rewrite propose loop-to-iterator orders.rs workdir -o workdir/proposal.json
+rewrite: proposal written to workdir/proposal.json
+rewrite: certificate written to workdir/proposal.cert.json (fnv1a64:566af96f0326dd9e)
+--- a/orders.rs
++++ b/orders.rs
+@@ -11,21 +11,13 @@
+
+ /// Sum the settled value of a batch, in cents.
+ pub fn settled_total(orders: Vec<Order>) -> i64 {
+-    let mut total = 0;
+-    for o in orders {
+-        total += o.cents;
+-    }
+-    total
+-}
+-
+-/// Collect the ids of the orders that passed validation.
+-pub fn valid_ids(orders: Vec<Order>) -> Vec<u64> {
+-    let mut ids = Vec::new();
+-    for o in orders {
+-        if o.valid {
+-            ids.push(o.id);
+-        }
+-    }
++    let mut total = orders.into_iter().fold(0, |mut total, o| { total += o.cents; total });
++    total
++}
++
++/// Collect the ids of the orders that passed validation.
++pub fn valid_ids(orders: Vec<Order>) -> Vec<u64> {
++    let mut ids = orders.into_iter().filter_map(|o| if o.valid { Some(o.id) } else { None }).collect::<Vec<_>>();
+     ids
+ }
+
+(exit 0)
+
+-- 2. the certificate ---------------------------------------------------
+   rule id + version, the schema-obligation reference, before/after file
+   fingerprints and CPG hashes, the licensed remapping checks, and the
+   stated assumptions. Everything below is recomputable from the source
+   file and the proposal alone.
+
+$ python3 -m json.tool workdir/proposal.cert.json
+{
+    "after_cpg_hash": "fnv1a64:b48998171561bf7e",
+    "after_fingerprint": "fnv1a64:f1e9a3a12a666978",
+    "assumptions": [
+        "conservative may-reach def-use: DATA_DEP is may-reach, not must-reach; cut equality is equality of conservative sets",
+        "no aliasing analysis: `x.f = v` and `*p = v` are reads, never definitions or kills",
+        "side-effect and panic ORDER within collapsed regions is per-rule: dead-branch deletes only unreachable code; loop-to-iterator reuses the original expressions verbatim in the original per-element order; extract-function relocates the statements verbatim behind an immediately-executed call",
+        "statement grain: sub-statement corruption is caught by the licensed-emission replay, not the graph checks",
+        "closure-parameter shadow reads: names bound inside a collapsed region may re-read same-named outer definitions at statement grain; these add conservative may-deps only and are licensed when they target a surviving definition of that name",
+        "model fidelity: where a Kani harness exists it proves the schema over a bounded model; the model-to-Rust mapping is a recorded argument, not a machine-checked fact",
+        "the after text must parse cleanly; certification refuses diagnostics rather than guessing"
+    ],
+    "before_cpg_hash": "fnv1a64:05deb88a36f9ff18",
+    "before_fingerprint": "fnv1a64:5c7b01e46bd733e7",
+    "cert_hash": "fnv1a64:566af96f0326dd9e",
+    "checks": [
+        "fn `fn::settled_total#13` [loop-to-iterator]: 1 pair(s) re-derived; each collapsed to one `let` with no early-exit edges; CFG loop structure removed exactly; DFG external cut preserved (in-cut 1 edge(s), accumulator out-cut 2 edge(s), 0 licensed shadow read(s))",
+        "fn `fn::valid_ids#22` [loop-to-iterator]: 1 pair(s) re-derived; each collapsed to one `let` with no early-exit edges; CFG loop structure removed exactly; DFG external cut preserved (in-cut 1 edge(s), accumulator out-cut 1 edge(s), 0 licensed shadow read(s))",
+        "replayed licensed emission: 2 edit(s) byte-identical to this binary's recognizer+emitter output for the original file"
+    ],
+    "dir": "workdir",
+    "file": "orders.rs",
+    "functions": {
+        "affected": [
+            "fn::settled_total#13",
+            "fn::valid_ids#22"
+        ],
+        "unaffected_verified": 1
+    },
+    "proposal_hash": "fnv1a64:ca055d0e9bb2b77d",
+    "rule": {
+        "id": "loop-to-iterator",
+        "version": "1"
+    },
+    "schema": "trailtracker.rewrite-cert/v1",
+    "schema_obligation": {
+        "kani": "k3c_loop_fold_schema",
+        "ref": "docs/decisions/0007-equivalence-certificates.md#loop-to-iterator-v1--licensed-remapping"
+    }
+}
+
+-- 3. verify: the INDEPENDENT check ------------------------------------
+   reads only the original file + the proposal, trusts nothing cached
+   (not even the certificate propose wrote), recomputes the before/after
+   CPGs, re-derives the licensed remapping, replays the emission.
+
+$ trailtracker rewrite verify --proposal workdir/proposal.json
+VERIFIED loop-to-iterator v1 on workdir/orders.rs (2 edit(s))
+  proposal    fnv1a64:ca055d0e9bb2b77d
+  before      fnv1a64:5c7b01e46bd733e7
+  after       fnv1a64:f1e9a3a12a666978
+  cpg before  fnv1a64:05deb88a36f9ff18
+  cpg after   fnv1a64:b48998171561bf7e
+  obligation  docs/decisions/0007-equivalence-certificates.md#loop-to-iterator-v1--licensed-remapping (k3c_loop_fold_schema)
+  functions   2 affected, 1 unaffected re-verified
+  check       fn `fn::settled_total#13` [loop-to-iterator]: 1 pair(s) re-derived; each collapsed to one `let` with no early-exit edges; CFG loop structure removed exactly; DFG external cut preserved (in-cut 1 edge(s), accumulator out-cut 2 edge(s), 0 licensed shadow read(s))
+  check       fn `fn::valid_ids#22` [loop-to-iterator]: 1 pair(s) re-derived; each collapsed to one `let` with no early-exit edges; CFG loop structure removed exactly; DFG external cut preserved (in-cut 1 edge(s), accumulator out-cut 1 edge(s), 0 licensed shadow read(s))
+  check       replayed licensed emission: 2 edit(s) byte-identical to this binary's recognizer+emitter output for the original file
+  assumptions 7 (see certificate document)
+  cert        fnv1a64:566af96f0326dd9e
+(exit 0)
+
+-- 4. tamper with the proposal: verification must refuse ---------------
+   one character of drift in the approved bytes (o.id -> o.id + 1):
+
+$ sed -i.orig "s/Some(o.id)/Some(o.id + 1)/" workdir/proposal.json
+
+$ trailtracker rewrite verify --proposal workdir/proposal.json
+trailtracker: proposal workdir/proposal.json does not verify: proposal_hash does not verify (document says fnv1a64:ca055d0e9bb2b77d, canonical body hashes to fnv1a64:53dd0c135a85f787) — the proposal was modified after propose
+  fix: re-run `trailtracker rewrite propose` to generate a fresh proposal; hand-edited or stale proposals are never certified.
+(exit 4)
+
+$ mv workdir/proposal.json.orig workdir/proposal.json   # restore the honest proposal
+
+-- 5. apply: the only writing path, certified BY DEFAULT ----------------
+   since K3d, apply always re-runs the full equivalence verification
+   before writing (--require-cert is the default; there is no --no-cert).
+
+$ trailtracker rewrite apply --proposal workdir/proposal.json
+applied 2 edit(s) to workdir/orders.rs (loop-to-iterator v1, certified fnv1a64:566af96f0326dd9e)
+(exit 0)
+
+$ cat workdir/orders.rs
+//! Order settlement — the fixture for the verified-rewrite walkthrough.
+//! Two functions carry recognizable `loop-to-iterator` sites; `audit` is
+//! deliberately untouched so the certificate has an unaffected function to
+//! re-verify.
+
+pub struct Order {
+    pub id: u64,
+    pub cents: i64,
+    pub valid: bool,
+}
+
+/// Sum the settled value of a batch, in cents.
+pub fn settled_total(orders: Vec<Order>) -> i64 {
+    let mut total = orders.into_iter().fold(0, |mut total, o| { total += o.cents; total });
+    total
+}
+
+/// Collect the ids of the orders that passed validation.
+pub fn valid_ids(orders: Vec<Order>) -> Vec<u64> {
+    let mut ids = orders.into_iter().filter_map(|o| if o.valid { Some(o.id) } else { None }).collect::<Vec<_>>();
+    ids
+}
+
+/// Untouched by the rewrite; the certificate proves it stayed identical.
+pub fn audit(ids: &[u64]) -> usize {
+    ids.len()
+}
+
+-- 6. re-verify: the proposal has self-invalidated ----------------------
+   the file now carries the certificate's AFTER fingerprint, so the
+   spent proposal no longer matches — a proposal approves exactly one
+   application, exactly once.
+
+$ trailtracker rewrite verify --proposal workdir/proposal.json
+trailtracker: equivalence verification FAILED for workdir/orders.rs: file_fingerprint_mismatch: the file is fnv1a64:f1e9a3a12a666978 but the proposal expects fnv1a64:5c7b01e46bd733e7
+  fix: the proposal is not a certified-safe application of loop-to-iterator v1; re-run `trailtracker rewrite propose` and review a fresh proposal.
+(exit 4)
+
+== done: proposed, certified, independently verified, tamper refused, ==
+==       applied under the default certificate gate, self-invalidated ==

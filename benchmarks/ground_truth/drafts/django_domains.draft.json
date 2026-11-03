@@ -1,0 +1,343 @@
+{
+ "repo": "django",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:f38a932980502196 timestamp=2026-07-07T13:15:27Z)",
+ "date": "2026-07-07",
+ "sha": "73dd0169a54f4bbcb41b29bf7d51a36f86c89afe",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "DjangoCoreFramework",
+   "structuralCluster": "django",
+   "pathPrefixes": [
+    "django/",
+    "tests/auth_tests/",
+    "tests/messages_tests/",
+    "tests/template_tests/",
+    "tests/utils_tests/"
+   ],
+   "fileCount": 1349,
+   "prefixCoverage": 0.806,
+   "description": "Core Django framework including forms, authentication, admin interface, configuration, and test utilities.",
+   "responsibilities": [
+    "Form handling",
+    "Authentication system",
+    "Admin interface",
+    "Template system",
+    "Configuration management",
+    "Core utilities"
+   ]
+  },
+  {
+   "name": "DjangoDatabaseLayer",
+   "structuralCluster": "django/db",
+   "pathPrefixes": [
+    "django/db/",
+    "tests/admin_autodiscover/",
+    "tests/admin_views/",
+    "tests/aggregation/",
+    "tests/app_loading/",
+    "tests/apps/",
+    "tests/asgi/",
+    "tests/async/",
+    "tests/backends/base/",
+    "tests/backends/mysql/",
+    "tests/backends/postgresql/",
+    "tests/basic/",
+    "tests/composite_pk/",
+    "tests/context_processors/",
+    "tests/dates/",
+    "tests/db_functions/",
+    "tests/dbshell/",
+    "tests/defer/",
+    "tests/delete/",
+    "tests/deprecation/",
+    "tests/flatpages_tests/",
+    "tests/foreign_object/",
+    "tests/generic_views/",
+    "tests/gis_tests/geoapp/",
+    "tests/handlers/",
+    "tests/indexes/",
+    "tests/lookup/",
+    "tests/m2m_through_regress/",
+    "tests/middleware_exceptions/",
+    "tests/model_fields/",
+    "tests/model_forms/",
+    "tests/model_inheritance/",
+    "tests/model_meta/",
+    "tests/model_options/",
+    "tests/model_package/",
+    "tests/model_regress/",
+    "tests/multiple_database/",
+    "tests/null_fk/",
+    "tests/order_with_respect_to/",
+    "tests/postgres_tests/",
+    "tests/prefetch_related/",
+    "tests/project_template/",
+    "tests/proxy_model_inheritance/",
+    "tests/proxy_models/",
+    "tests/queries/",
+    "tests/resolve_url/",
+    "tests/schema/",
+    "tests/servers/",
+    "tests/shortcuts/",
+    "tests/sitemaps_tests/",
+    "tests/tasks/",
+    "tests/template_backends/",
+    "tests/test_client/",
+    "tests/test_client_regress/",
+    "tests/test_runner/",
+    "tests/test_utils/",
+    "tests/timezones/",
+    "tests/update/",
+    "tests/urlpatterns/",
+    "tests/validation/"
+   ],
+   "fileCount": 818,
+   "prefixCoverage": 0.722,
+   "description": "Django's database access layer with QuerySet API, model fields, schema operations, and comprehensive database tests.",
+   "responsibilities": [
+    "QuerySet operations",
+    "Model field definitions",
+    "Expression processing",
+    "Schema migrations",
+    "Admin views"
+   ]
+  },
+  {
+   "name": "FormsTestSuite",
+   "structuralCluster": "forms_tests",
+   "pathPrefixes": [
+    "tests/forms_tests/"
+   ],
+   "fileCount": 27,
+   "prefixCoverage": 1.0,
+   "description": "Comprehensive test suite for Django forms, widgets, formsets, and form utilities.",
+   "responsibilities": [
+    "Form validation",
+    "Widget rendering",
+    "Formset handling",
+    "Form media",
+    "Input format handling"
+   ]
+  },
+  {
+   "name": "GISTestSuite",
+   "structuralCluster": "gis_tests",
+   "pathPrefixes": [
+    "tests/gis_tests/gdal_tests/test_srs.py",
+    "tests/gis_tests/gdal_tests/tests.py",
+    "tests/gis_tests/geoadmin/",
+    "tests/gis_tests/geoapp/models.py",
+    "tests/gis_tests/geos_tests/",
+    "tests/gis_tests/inspectapp/",
+    "tests/gis_tests/rasterapp/",
+    "tests/gis_tests/test_data.py",
+    "tests/gis_tests/test_geoforms.py",
+    "tests/gis_tests/test_geoip2.py",
+    "tests/gis_tests/test_measure.py",
+    "tests/gis_tests/test_spatialrefsys.py",
+    "tests/gis_tests/tests.py",
+    "tests/gis_tests/utils.py"
+   ],
+   "fileCount": 22,
+   "prefixCoverage": 0.818,
+   "description": "Tests for GeoDjango with GEOS geometry operations, GDAL raster handling, and spatial reference systems.",
+   "responsibilities": [
+    "GEOS geometry operations",
+    "GDAL raster handling",
+    "Spatial forms",
+    "Geographic field operations",
+    "Coordinate system handling"
+   ]
+  },
+  {
+   "name": "PlatformInfrastructure",
+   "structuralCluster": "Shared/Platform",
+   "pathPrefixes": [
+    "js_tests/",
+    "tests/dispatch/",
+    "tests/responses/",
+    "tests/user_commands/management/commands/reverse_url.py",
+    "tests/user_commands/management/commands/transaction.py"
+   ],
+   "fileCount": 20,
+   "prefixCoverage": 0.8,
+   "description": "Cross-cutting platform services including signal dispatch, HTTP responses, cookies, and command infrastructure.",
+   "responsibilities": [
+    "Signal dispatching",
+    "HTTP responses",
+    "Cookie handling",
+    "Command infrastructure",
+    "Request utilities"
+   ]
+  },
+  {
+   "name": "SystemCheckFramework",
+   "structuralCluster": "check_framework",
+   "pathPrefixes": [
+    "tests/check_framework/"
+   ],
+   "fileCount": 13,
+   "prefixCoverage": 1.0,
+   "description": "Django system checks framework for validating configuration, security settings, models, URLs, templates, and caches.",
+   "responsibilities": [
+    "Configuration validation",
+    "Security checks",
+    "Model checks",
+    "URL pattern validation",
+    "Template validation",
+    "Cache validation"
+   ]
+  },
+  {
+   "name": "StaticFilesTestSuite",
+   "structuralCluster": "staticfiles_tests",
+   "pathPrefixes": [
+    "tests/staticfiles_tests/"
+   ],
+   "fileCount": 9,
+   "prefixCoverage": 1.0,
+   "description": "Tests for Django's static files handling including storage, collection, manifests, and file discovery.",
+   "responsibilities": [
+    "Static file storage",
+    "File collection",
+    "Hash-based manifests",
+    "File finders",
+    "Post-processing handling"
+   ]
+  },
+  {
+   "name": "DataSerializers",
+   "structuralCluster": "serializers",
+   "pathPrefixes": [
+    "tests/serializers/models/",
+    "tests/serializers/test_json.py",
+    "tests/serializers/test_jsonl.py",
+    "tests/serializers/test_yaml.py"
+   ],
+   "fileCount": 7,
+   "prefixCoverage": 0.857,
+   "description": "Django serialization framework supporting JSON, JSONL, YAML formats with natural key handling.",
+   "responsibilities": [
+    "JSON serialization",
+    "YAML serialization",
+    "Natural key handling",
+    "Model serialization",
+    "Format options"
+   ]
+  },
+  {
+   "name": "I18nTestSuite",
+   "structuralCluster": "i18n",
+   "pathPrefixes": [
+    "tests/i18n/"
+   ],
+   "fileCount": 6,
+   "prefixCoverage": 1.0,
+   "description": "Internationalization and localization testing including message extraction, compilation, and translation patterns.",
+   "responsibilities": [
+    "Message extraction",
+    "Translation compilation",
+    "Locale pattern routing",
+    "Translation form handling",
+    "Language utilities"
+   ]
+  },
+  {
+   "name": "DatabaseBackends",
+   "structuralCluster": "backends",
+   "pathPrefixes": [
+    "tests/backends/oracle/test_operations.py",
+    "tests/backends/sqlite/test_features.py",
+    "tests/backends/sqlite/test_operations.py",
+    "tests/backends/test_ddl_references.py"
+   ],
+   "fileCount": 5,
+   "prefixCoverage": 0.8,
+   "description": "Database backend implementations and operations testing for PostgreSQL, Oracle, and SQLite.",
+   "responsibilities": [
+    "SQL generation",
+    "DDL operations",
+    "Schema migrations",
+    "Bulk operations",
+    "Database features"
+   ]
+  },
+  {
+   "name": "ViewsTestSuite",
+   "structuralCluster": "view_tests",
+   "pathPrefixes": [
+    "tests/view_tests/tests/test_debug.py",
+    "tests/view_tests/tests/test_i18n.py",
+    "tests/view_tests/tests/test_static.py",
+    "tests/view_tests/views.py"
+   ],
+   "fileCount": 4,
+   "prefixCoverage": 1.0,
+   "description": "Tests for Django views including exception reporting, debug views, i18n routing, and static file serving.",
+   "responsibilities": [
+    "Error reporting",
+    "Debug page rendering",
+    "Language selection",
+    "Static file serving",
+    "Response handling"
+   ]
+  },
+  {
+   "name": "FileHandling",
+   "structuralCluster": "file",
+   "pathPrefixes": [
+    "tests/file_uploads/uploadhandler.py",
+    "tests/file_uploads/views.py",
+    "tests/files/"
+   ],
+   "fileCount": 3,
+   "prefixCoverage": 1.0,
+   "description": "File handling and upload processing with handlers and utilities.",
+   "responsibilities": [
+    "File operations",
+    "File uploads",
+    "Upload handlers",
+    "Temporary file management",
+    "Multipart forms"
+   ]
+  },
+  {
+   "name": "ManagementCommands",
+   "structuralCluster": "admin_scripts",
+   "pathPrefixes": [
+    "tests/admin_scripts/tests.py"
+   ],
+   "fileCount": 1,
+   "prefixCoverage": 1.0,
+   "description": "Django management command infrastructure and tests for django-admin and manage.py commands.",
+   "responsibilities": [
+    "Command execution",
+    "Settings handling",
+    "Output verification",
+    "Project creation",
+    "Application scaffolding"
+   ]
+  },
+  {
+   "name": "URLRouting",
+   "structuralCluster": "urlpatterns_reverse",
+   "pathPrefixes": [
+    "tests/urlpatterns_reverse/"
+   ],
+   "fileCount": 1,
+   "prefixCoverage": 1.0,
+   "description": "URL pattern resolution and reversal with namespace and include support for dynamic URL routing.",
+   "responsibilities": [
+    "URL pattern reversal",
+    "Namespace handling",
+    "URL pattern resolution",
+    "URL configuration",
+    "View loading"
+   ]
+  }
+ ],
+ "reviewHint": "Django's documented decomposition: django/db (ORM), django/forms, django/http + django/urls (request/routing), django/template, django/core (handlers/mail/cache/management), and django/contrib/* as separate pluggable apps (admin, auth, sessions, contenttypes, gis, postgres...). Check whether clusters split contrib apps apart or lump them; tests/ mirrors app names."
+}

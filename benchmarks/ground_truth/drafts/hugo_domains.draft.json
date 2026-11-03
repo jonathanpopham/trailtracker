@@ -1,0 +1,211 @@
+{
+ "repo": "hugo",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:372b19de8fd1b452 timestamp=2026-07-07T13:16:09Z)",
+ "date": "2026-07-07",
+ "sha": "a198116669fdfba2eeda4f1d63c055001a10142f",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "SiteBuilder",
+   "structuralCluster": "hugolib",
+   "pathPrefixes": [
+    "commands/",
+    "hugolib/",
+    "parser/pageparser/",
+    "tpl/templates/",
+    "tpl/tplimpl/"
+   ],
+   "fileCount": 212,
+   "prefixCoverage": 0.816,
+   "description": "Orchestrates Hugo site generation by coordinating page creation, template application, and rebuild workflows.",
+   "responsibilities": [
+    "Site orchestration",
+    "Page lifecycle management",
+    "Build coordination",
+    "Incremental rebuilds",
+    "Integration testing"
+   ]
+  },
+  {
+   "name": "PageContent",
+   "structuralCluster": "resources",
+   "pathPrefixes": [
+    "helpers/",
+    "resources/"
+   ],
+   "fileCount": 198,
+   "prefixCoverage": 0.833,
+   "description": "Manages content pages, images, and resource transformations including optimization and caching.",
+   "responsibilities": [
+    "Page resource handling",
+    "Image processing",
+    "Content transformation",
+    "Resource metadata",
+    "Transform pipelines"
+   ]
+  },
+  {
+   "name": "TemplateEngine",
+   "structuralCluster": "tpl",
+   "pathPrefixes": [
+    "htesting/",
+    "tpl/cast/",
+    "tpl/collections/",
+    "tpl/crypto/",
+    "tpl/fmt/",
+    "tpl/images/",
+    "tpl/internal/",
+    "tpl/lang/",
+    "tpl/math/",
+    "tpl/openapi/",
+    "tpl/os/",
+    "tpl/path/",
+    "tpl/safe/",
+    "tpl/transform/"
+   ],
+   "fileCount": 169,
+   "prefixCoverage": 0.811,
+   "description": "Provides template parsing, execution, and built-in functions for text and HTML template processing.",
+   "responsibilities": [
+    "Template parsing",
+    "Template execution",
+    "Function libraries",
+    "Context management",
+    "Template rendering"
+   ]
+  },
+  {
+   "name": "PlatformInfra",
+   "structuralCluster": "Shared/Platform",
+   "pathPrefixes": [
+    "config/",
+    "hugofs/",
+    "identity/",
+    "internal/js/",
+    "media/",
+    "output/",
+    "parser/metadecoders/",
+    "related/",
+    "source/",
+    "transform/urlreplacers/"
+   ],
+   "fileCount": 118,
+   "prefixCoverage": 0.822,
+   "description": "Furnishes foundational infrastructure including filesystem abstraction, configuration loading, and media type management.",
+   "responsibilities": [
+    "Filesystem abstraction",
+    "Configuration management",
+    "Identity management",
+    "Media type handling",
+    "Dependency management"
+   ]
+  },
+  {
+   "name": "UtilityCore",
+   "structuralCluster": "common",
+   "pathPrefixes": [
+    "common/"
+   ],
+   "fileCount": 113,
+   "prefixCoverage": 0.965,
+   "description": "Provides shared utility functions for path handling, logging, error management, and type operations across the codebase.",
+   "responsibilities": [
+    "Path manipulation",
+    "Logging infrastructure",
+    "Error handling",
+    "Type reflection",
+    "Collection utilities"
+   ]
+  },
+  {
+   "name": "MarkupConverter",
+   "structuralCluster": "markup",
+   "pathPrefixes": [
+    "markup/"
+   ],
+   "fileCount": 59,
+   "prefixCoverage": 0.966,
+   "description": "Converts various markup formats (Markdown, AsciiDoc, reStructuredText) to HTML with syntax highlighting.",
+   "responsibilities": [
+    "Markup parsing",
+    "Format conversion",
+    "Syntax highlighting",
+    "Render hooks",
+    "Content rendering"
+   ]
+  },
+  {
+   "name": "CacheLayer",
+   "structuralCluster": "cache",
+   "pathPrefixes": [
+    "cache/"
+   ],
+   "fileCount": 13,
+   "prefixCoverage": 1.0,
+   "description": "Provides multi-level caching infrastructure including file, dynamic, and HTTP caches for performance optimization.",
+   "responsibilities": [
+    "File caching",
+    "Dynamic caching",
+    "Cache partitioning",
+    "Cache invalidation",
+    "HTTP caching"
+   ]
+  },
+  {
+   "name": "ModuleManager",
+   "structuralCluster": "npm",
+   "pathPrefixes": [
+    "modules/"
+   ],
+   "fileCount": 13,
+   "prefixCoverage": 1.0,
+   "description": "Manages npm packages and Go modules for theme configuration and dependency resolution.",
+   "responsibilities": [
+    "Module configuration",
+    "Package management",
+    "Dependency resolution",
+    "Vendor handling",
+    "Module integration"
+   ]
+  },
+  {
+   "name": "ConfigSecurity",
+   "structuralCluster": "config",
+   "pathPrefixes": [
+    "config/security/",
+    "tpl/reflect/",
+    "tpl/urls/"
+   ],
+   "fileCount": 11,
+   "prefixCoverage": 1.0,
+   "description": "Enforces security policies and manages configuration for URL handling and content validation.",
+   "responsibilities": [
+    "Security enforcement",
+    "URL validation",
+    "Content whitelisting",
+    "Configuration parsing",
+    "Policy management"
+   ]
+  },
+  {
+   "name": "DeploymentEngine",
+   "structuralCluster": "deploy",
+   "pathPrefixes": [
+    "deploy/"
+   ],
+   "fileCount": 7,
+   "prefixCoverage": 1.0,
+   "description": "Handles deployment to multiple cloud providers including CloudFront, Google Cloud, and Azure.",
+   "responsibilities": [
+    "Deployment orchestration",
+    "File synchronization",
+    "Provider integration",
+    "Change detection",
+    "Cloud management"
+   ]
+  }
+ ],
+ "reviewHint": "Hugo: hugolib (site build core), markup (rendering), resources (asset pipeline), tpl (template funcs), modules + hugofs + config, commands (CLI). Go package dirs are the honest boundaries."
+}

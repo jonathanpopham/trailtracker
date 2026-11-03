@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Severity_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula><![CDATA[ISBLANK(TEXT(Severity__c)) && NOT($Permission.Bypass)]]></errorConditionFormula>
+    <errorMessage>Severity is required.</errorMessage>
+</ValidationRule>

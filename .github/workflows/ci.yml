@@ -1,0 +1,96 @@
+name: ci
+
+# Build-time regression checks for the analysis CLI. The report records
+# results and the binary hash; it is not a proof of whole-program correctness.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  gate:
+    name: compile · test · eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        run: |
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install stable --profile minimal --component rustfmt,clippy
+          rustup default stable
+
+      - name: Format check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy (deny warnings)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Test (workspace)
+        run: cargo test --workspace
+
+      - name: Verification gate (regression + property/fuzz + attestation)
+        run: |
+          cargo run --release -p trailtracker-eval --bin verify -- \
+            --root . \
+            --binary target/release/trailtracker \
+            --out verification-report.json \
+            --cases 20000
+
+      - name: Corpus regression gate (golden snapshots of known codebases)
+        # Diffs the analyzer's graph for every vendored corpus crate against its
+        # committed golden. Any divergence fails the PR. To bless an intentional
+        # change: `cargo run -p trailtracker-eval --bin regress -- --update` and
+        # commit the updated eval/golden/*.jsonl in the same PR.
+        run: cargo run --release -p trailtracker-eval --bin regress -- --root .
+
+      - name: Ontology golden gate
+        run: bash benchmarks/golden_check.sh
+
+      - name: MCP integration tests
+        run: python3 mcp/test_mcp.py
+
+      - name: Upload verification report
+        if: ${{ !env.ACT }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: verification-report.json
+
+  formal:
+    name: formal verification (kani)
+    runs-on: ubuntu-latest
+    # Kept non-blocking until the Kani toolchain is pinned in CI; the proof still
+    # runs and its result is visible. Flip to blocking once stabilized.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (stable)
+        run: |
+          if ! command -v rustup >/dev/null; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+            export PATH="$HOME/.cargo/bin:$PATH"
+          fi
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+
+      - name: Install Kani
+        run: |
+          cargo install --locked kani-verifier
+          cargo kani setup
+
+      - name: Prove losslessness invariant
+        run: cargo kani -p trailtracker-eval

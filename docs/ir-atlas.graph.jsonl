@@ -1,0 +1,77 @@
+{"id":"iredge::CALLS","kind":"IREdgeKind","name":"CALLS","properties":{"description":"a call site (application)","domain":["Function"],"range":["Function","UnresolvedSymbol"],"status":"core"},"record":"node"}
+{"id":"iredge::CONTAINS","kind":"IREdgeKind","name":"CONTAINS","properties":{"description":"structural containment","domain":["File","Module","Package"],"range":["Module","File"],"status":"core"},"record":"node"}
+{"id":"iredge::DECLARES","kind":"IREdgeKind","name":"DECLARES","properties":{"description":"a scope declares a definition","domain":["File","Module"],"range":["Function","Type","Constant"],"status":"core"},"record":"node"}
+{"id":"iredge::DECORATES","kind":"IREdgeKind","name":"DECORATES","properties":{"description":"decorator/annotation attached to a definition","domain":["Function","Type"],"motivated_by":"python,javascript,typescript,java","range":["Function"],"status":"proposed"},"record":"node"}
+{"id":"iredge::DEPENDS_ON","kind":"IREdgeKind","name":"DEPENDS_ON","properties":{"description":"declared dependency","domain":["Package"],"range":["ExternalDependency"],"status":"core"},"record":"node"}
+{"id":"iredge::EXPORTS","kind":"IREdgeKind","name":"EXPORTS","properties":{"description":"explicit public-surface export","domain":["Module","File"],"motivated_by":"javascript,typescript,elixir,erlang,elm","range":["Function","Type","Constant"],"status":"proposed"},"record":"node"}
+{"id":"iredge::EXTENDS","kind":"IREdgeKind","name":"EXTENDS","properties":{"description":"class inheritance (is-a), distinct from IMPLEMENTS","domain":["Type"],"motivated_by":"python,java,cpp,kotlin,scala,ruby","range":["Type"],"status":"core"},"record":"node"}
+{"id":"iredge::HAS_METHOD","kind":"IREdgeKind","name":"HAS_METHOD","properties":{"description":"a type owns a method","domain":["Type"],"range":["Function"],"status":"core"},"record":"node"}
+{"id":"iredge::IMPLEMENTS","kind":"IREdgeKind","name":"IMPLEMENTS","properties":{"description":"implements a trait/interface/protocol","domain":["Type"],"range":["Type"],"status":"core"},"record":"node"}
+{"id":"iredge::IMPORTS","kind":"IREdgeKind","name":"IMPORTS","properties":{"description":"imports a path","domain":["File"],"range":["ExternalDependency","Module"],"status":"core"},"record":"node"}
+{"id":"iredge::READS","kind":"IREdgeKind","name":"READS","properties":{"description":"reads a same-module constant binding","domain":["Function"],"motivated_by":"python","range":["Constant"],"status":"core"},"record":"node"}
+{"id":"iredge::USES_TYPE","kind":"IREdgeKind","name":"USES_TYPE","properties":{"description":"references a type","domain":["Function","Type"],"range":["Type"],"status":"core"},"record":"node"}
+{"id":"irnode::Constant","kind":"IRNodeKind","name":"Constant","properties":{"description":"const / static / top-level binding (value)","status":"core"},"record":"node"}
+{"id":"irnode::ExternalDependency","kind":"IRNodeKind","name":"ExternalDependency","properties":{"description":"a dependency not held in the project","status":"core"},"record":"node"}
+{"id":"irnode::File","kind":"IRNodeKind","name":"File","properties":{"description":"a source file on disk","status":"core"},"record":"node"}
+{"id":"irnode::Function","kind":"IRNodeKind","name":"Function","properties":{"description":"function, method, or associated fn (abstraction)","status":"core"},"record":"node"}
+{"id":"irnode::Macro","kind":"IRNodeKind","name":"Macro","properties":{"description":"macro definition / invocation target (reserved)","status":"reserved"},"record":"node"}
+{"id":"irnode::Module","kind":"IRNodeKind","name":"Module","properties":{"description":"a module / namespace scope","status":"core"},"record":"node"}
+{"id":"irnode::Package","kind":"IRNodeKind","name":"Package","properties":{"description":"crate / assembly / project","status":"core"},"record":"node"}
+{"id":"irnode::Type","kind":"IRNodeKind","name":"Type","properties":{"description":"type decl: struct/enum/trait/alias/class/interface/...","status":"core"},"record":"node"}
+{"id":"irnode::UnresolvedSymbol","kind":"IRNodeKind","name":"UnresolvedSymbol","properties":{"description":"a referenced name with no found definition","status":"core"},"record":"node"}
+{"id":"lang::python","kind":"Language","name":"python","properties":{"status":"in_progress"},"record":"node"}
+{"id":"lang::rust","kind":"Language","name":"rust","properties":{"status":"implemented"},"record":"node"}
+{"from":"iredge::CALLS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::CONTAINS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"iredge::CONTAINS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"iredge::CONTAINS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Package"}
+{"from":"iredge::DECLARES","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"iredge::DECLARES","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"iredge::DECORATES","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::DECORATES","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::DEPENDS_ON","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Package"}
+{"from":"iredge::EXPORTS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"iredge::EXPORTS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"iredge::EXTENDS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::HAS_METHOD","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::IMPLEMENTS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::IMPORTS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"iredge::READS","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::USES_TYPE","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::USES_TYPE","kind":"DOMAIN","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"lang::python","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::READS"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::CALLS"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::CONTAINS"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::DECLARES"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::DEPENDS_ON"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::HAS_METHOD"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::IMPLEMENTS"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::IMPORTS"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"iredge::USES_TYPE"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::Constant"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::ExternalDependency"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::Package"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"lang::rust","kind":"PRODUCES","properties":{},"record":"edge","to":"irnode::UnresolvedSymbol"}
+{"from":"iredge::CALLS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::CALLS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::UnresolvedSymbol"}
+{"from":"iredge::CONTAINS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::File"}
+{"from":"iredge::CONTAINS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"iredge::DECLARES","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Constant"}
+{"from":"iredge::DECLARES","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::DECLARES","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::DECORATES","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::DEPENDS_ON","kind":"RANGE","properties":{},"record":"edge","to":"irnode::ExternalDependency"}
+{"from":"iredge::EXPORTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Constant"}
+{"from":"iredge::EXPORTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::EXPORTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::EXTENDS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::HAS_METHOD","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Function"}
+{"from":"iredge::IMPLEMENTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Type"}
+{"from":"iredge::IMPORTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::ExternalDependency"}
+{"from":"iredge::IMPORTS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Module"}
+{"from":"iredge::READS","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Constant"}
+{"from":"iredge::USES_TYPE","kind":"RANGE","properties":{},"record":"edge","to":"irnode::Type"}

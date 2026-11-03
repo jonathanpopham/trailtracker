@@ -1,0 +1,28 @@
+{"id":"file::force-app/main/default/objects/Case__c/Case__c.object-meta.xml","kind":"File","name":"Case__c.object-meta.xml","properties":{"bytes":147,"language":"salesforce-metadata","path":"force-app/main/default/objects/Case__c/Case__c.object-meta.xml"},"record":"node"}
+{"id":"file::force-app/main/default/objects/Case__c/fields/Priority__c.field-meta.xml","kind":"File","name":"Priority__c.field-meta.xml","properties":{"bytes":203,"language":"salesforce-metadata","path":"force-app/main/default/objects/Case__c/fields/Priority__c.field-meta.xml"},"record":"node"}
+{"id":"file::force-app/main/default/objects/Case__c/fields/Severity__c.field-meta.xml","kind":"File","name":"Severity__c.field-meta.xml","properties":{"bytes":207,"language":"salesforce-metadata","path":"force-app/main/default/objects/Case__c/fields/Severity__c.field-meta.xml"},"record":"node"}
+{"id":"file::force-app/main/default/profiles/Care_Admin.profile-meta.xml","kind":"File","name":"Care_Admin.profile-meta.xml","properties":{"bytes":668,"language":"salesforce-metadata","path":"force-app/main/default/profiles/Care_Admin.profile-meta.xml"},"record":"node"}
+{"id":"file::force-app/main/default/workflows/Case__c.workflow-meta.xml","kind":"File","name":"Case__c.workflow-meta.xml","properties":{"bytes":845,"language":"salesforce-metadata","path":"force-app/main/default/workflows/Case__c.workflow-meta.xml"},"record":"node"}
+{"id":"pkg::sfperms","kind":"Package","name":"sfperms","properties":{"ecosystem":"salesforce-metadata"},"record":"node"}
+{"id":"profile::Care_Admin","kind":"Type","name":"Care_Admin","properties":{"language":"salesforce-metadata","path":"force-app/main/default/profiles/Care_Admin.profile-meta.xml","type_kind":"profile"},"record":"node"}
+{"id":"sobject::Case__c","kind":"Type","name":"Case__c","properties":{"label":"Care Case","language":"salesforce-metadata","type_kind":"sobject"},"record":"node"}
+{"id":"sobject_field::Case__c.Priority__c","kind":"Constant","name":"Priority__c","properties":{"field_type":"Text","label":"Priority","language":"salesforce-metadata","object":"Case__c","path":"force-app/main/default/objects/Case__c/fields/Priority__c.field-meta.xml","type_kind":"sobject_field"},"record":"node"}
+{"id":"sobject_field::Case__c.Severity__c","kind":"Constant","name":"Severity__c","properties":{"field_type":"Picklist","label":"Severity","language":"salesforce-metadata","object":"Case__c","path":"force-app/main/default/objects/Case__c/fields/Severity__c.field-meta.xml","type_kind":"sobject_field"},"record":"node"}
+{"id":"workflow_rule::Case__c.Escalate High Severity","kind":"Function","name":"Escalate High Severity","properties":{"active":"true","language":"salesforce-metadata","object":"Case__c","path":"force-app/main/default/workflows/Case__c.workflow-meta.xml","type_kind":"workflow_rule"},"record":"node"}
+{"from":"file::force-app/main/default/objects/Case__c/Case__c.object-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"sobject::Case__c"}
+{"from":"file::force-app/main/default/objects/Case__c/fields/Priority__c.field-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"sobject_field::Case__c.Priority__c"}
+{"from":"file::force-app/main/default/objects/Case__c/fields/Severity__c.field-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"sobject_field::Case__c.Severity__c"}
+{"from":"file::force-app/main/default/profiles/Care_Admin.profile-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"profile::Care_Admin"}
+{"from":"file::force-app/main/default/workflows/Case__c.workflow-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"workflow_rule::Case__c.Escalate High Severity"}
+{"from":"pkg::sfperms","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/objects/Case__c/Case__c.object-meta.xml"}
+{"from":"pkg::sfperms","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/objects/Case__c/fields/Priority__c.field-meta.xml"}
+{"from":"pkg::sfperms","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/objects/Case__c/fields/Severity__c.field-meta.xml"}
+{"from":"pkg::sfperms","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/profiles/Care_Admin.profile-meta.xml"}
+{"from":"pkg::sfperms","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/workflows/Case__c.workflow-meta.xml"}
+{"from":"profile::Care_Admin","kind":"USES_TYPE","properties":{"create":"true","delete":"false","edit":"true","read":"true","via":"permission"},"record":"edge","to":"sobject::Case__c"}
+{"from":"profile::Care_Admin","kind":"USES_TYPE","properties":{"editable":"false","readable":"true","via":"field_permission"},"record":"edge","to":"sobject_field::Case__c.Severity__c"}
+{"from":"sobject::Case__c","kind":"DECLARES","properties":{},"record":"edge","to":"sobject_field::Case__c.Priority__c"}
+{"from":"sobject::Case__c","kind":"DECLARES","properties":{},"record":"edge","to":"sobject_field::Case__c.Severity__c"}
+{"from":"sobject::Case__c","kind":"DECLARES","properties":{},"record":"edge","to":"workflow_rule::Case__c.Escalate High Severity"}
+{"from":"workflow_rule::Case__c.Escalate High Severity","kind":"USES_TYPE","properties":{"via":"field_update"},"record":"edge","to":"sobject_field::Case__c.Priority__c"}
+{"from":"workflow_rule::Case__c.Escalate High Severity","kind":"USES_TYPE","properties":{"via":"criteria"},"record":"edge","to":"sobject_field::Case__c.Severity__c"}

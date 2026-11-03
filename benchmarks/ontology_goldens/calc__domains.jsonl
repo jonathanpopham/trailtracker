@@ -1,0 +1,9 @@
+{"id":"domain::op","kind":"Module","name":"op","properties":{"confidence":"high","domain":"op","file_count":3,"kind":"business","label":"op","symbol_count":21,"unit_count":1,"view":"domains"},"record":"node"}
+{"id":"subdomain::op::(root)","kind":"Module","name":"(root)","properties":{"domain":"op","file_count":3,"subdomain":"(root)","symbol_count":21,"view":"domains"},"record":"node"}
+{"id":"unit::src/lib.rs","kind":"File","name":"lib.rs","properties":{"domain":"op","path":"src/lib.rs","symbol_count":4,"unit":"(root)","view":"domains"},"record":"node"}
+{"id":"unit::src/ops.rs","kind":"File","name":"ops.rs","properties":{"domain":"op","path":"src/ops.rs","symbol_count":15,"unit":"(root)","view":"domains"},"record":"node"}
+{"id":"unit::src/parser.rs","kind":"File","name":"parser.rs","properties":{"domain":"op","path":"src/parser.rs","symbol_count":2,"unit":"(root)","view":"domains"},"record":"node"}
+{"from":"domain::op","kind":"CONTAINS","properties":{},"record":"edge","to":"subdomain::op::(root)"}
+{"from":"domain::op","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::src/lib.rs"}
+{"from":"domain::op","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::src/ops.rs"}
+{"from":"domain::op","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::src/parser.rs"}

@@ -1,0 +1,104 @@
+{
+ "description": "Ontology eval cohort \u2014 diverse real codebases at pinned commits. tier 'gate' (.NET/TS) gates CI; tier 'explore' (cross-language) is benchmarked but not yet gating. Dropout: tune on 'dev', validate on 'holdout'.",
+ "cohort": [
+  {
+   "name": "eShop",
+   "url": "https://github.com/dotnet/eShop.git",
+   "sha": "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+   "split": "dev",
+   "notes": "DDD microservices, Feature.Tier",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "nopCommerce",
+   "url": "https://github.com/nopSolutions/nopCommerce.git",
+   "sha": "42f2a9ac537702679bef62a0600cf9afcbfe8ccc",
+   "split": "dev",
+   "notes": "layered monolith, Nop.*",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "bitwarden-server",
+   "url": "https://github.com/bitwarden/server.git",
+   "sha": "7b36f20e07ae2b883e4c7d09a249589d236b9679",
+   "split": "dev",
+   "notes": "security platform",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "nest",
+   "url": "https://github.com/nestjs/nest.git",
+   "sha": "5f2e2552399896e3e1b1ebde1e48a40718ffd1f2",
+   "split": "dev",
+   "notes": "TypeScript framework",
+   "lang": "typescript",
+   "tier": "gate"
+  },
+  {
+   "name": "jellyfin",
+   "url": "https://github.com/jellyfin/jellyfin.git",
+   "sha": "e31f168e9bc132b4f830e39b0781cac550c08b85",
+   "split": "holdout",
+   "notes": "monolith, Vendor.Feature",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "OrchardCore",
+   "url": "https://github.com/OrchardCMS/OrchardCore.git",
+   "sha": "91cd8a4bfcaf9cb1388edef6867af2a0b5a0a000",
+   "split": "holdout",
+   "notes": "modular CMS",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "Radarr",
+   "url": "https://github.com/Radarr/Radarr.git",
+   "sha": "d944e0e4c9753604513b0b1823cb2bfd5f68e53d",
+   "split": "holdout",
+   "notes": "NzbDrone.*",
+   "lang": "csharp",
+   "tier": "gate"
+  },
+  {
+   "name": "django",
+   "url": "https://github.com/django/django.git",
+   "sha": "73dd0169a54f4bbcb41b29bf7d51a36f86c89afe",
+   "split": "holdout",
+   "lang": "python",
+   "tier": "gate",
+   "notes": "Django \u2014 Python web framework"
+  },
+  {
+   "name": "hugo",
+   "url": "https://github.com/gohugoio/hugo.git",
+   "sha": "a198116669fdfba2eeda4f1d63c055001a10142f",
+   "split": "holdout",
+   "lang": "go",
+   "tier": "gate",
+   "notes": "Hugo \u2014 Go static site generator"
+  },
+  {
+   "name": "dubbo",
+   "url": "https://github.com/apache/dubbo.git",
+   "sha": "316df8e57677cc8c1ed6d92bd40ca0daba27393f",
+   "split": "holdout",
+   "lang": "java",
+   "tier": "gate",
+   "notes": "Apache Dubbo \u2014 Java RPC (Spring-style Controller/Service)"
+  },
+  {
+   "name": "alacritty",
+   "url": "https://github.com/alacritty/alacritty.git",
+   "sha": "bdb72b32eeb074e3a0b8559d8ccac458237474a3",
+   "split": "holdout",
+   "lang": "rust",
+   "tier": "gate",
+   "notes": "Alacritty \u2014 Rust terminal"
+  }
+ ]
+}

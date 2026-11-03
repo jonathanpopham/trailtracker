@@ -1,0 +1,191 @@
+{
+ "repo": "Radarr",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:fbcb731101380c8d timestamp=2026-07-07T13:13:40Z)",
+ "date": "2026-07-07",
+ "sha": "d944e0e4c9753604513b0b1823cb2bfd5f68e53d",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "CoreDomain",
+   "structuralCluster": "NzbDrone.Core",
+   "pathPrefixes": [
+    "src/NzbDrone.Core/"
+   ],
+   "fileCount": 1540,
+   "prefixCoverage": 0.995,
+   "description": "Implements core business logic for movie management, download coordination, indexers, media organization, notifications, and import list handling.",
+   "responsibilities": [
+    "Movie management",
+    "Download coordination",
+    "Indexer integration",
+    "Quality configuration",
+    "Import list processing",
+    "Notification dispatch"
+   ]
+  },
+  {
+   "name": "WebUI",
+   "structuralCluster": "frontend",
+   "pathPrefixes": [
+    "frontend/"
+   ],
+   "fileCount": 1225,
+   "prefixCoverage": 1.0,
+   "description": "React-based web interface with components, pages, and views for movies, discovery, settings, and system administration.",
+   "responsibilities": [
+    "UI components",
+    "Page views",
+    "Settings panels",
+    "Movie discovery",
+    "System interface"
+   ]
+  },
+  {
+   "name": "CoreTests",
+   "structuralCluster": "NzbDrone.Core.Test",
+   "pathPrefixes": [
+    "src/NzbDrone.Core.Test/"
+   ],
+   "fileCount": 367,
+   "prefixCoverage": 0.995,
+   "description": "Provides unit test fixtures, mock data builders, and test helpers for validating core domain logic and components.",
+   "responsibilities": [
+    "Test fixtures",
+    "Mock data builders",
+    "Test helpers",
+    "Domain validation"
+   ]
+  },
+  {
+   "name": "StateManagement",
+   "structuralCluster": "frontend/Store",
+   "pathPrefixes": [
+    "frontend/src/App/",
+    "frontend/src/Store/",
+    "frontend/src/typings/"
+   ],
+   "fileCount": 230,
+   "prefixCoverage": 0.965,
+   "description": "Manages application state using Redux with action creators, reducers, and memoized selectors for efficient state queries.",
+   "responsibilities": [
+    "State management",
+    "Action creators",
+    "Selector functions",
+    "Store configuration",
+    "State persistence"
+   ]
+  },
+  {
+   "name": "SharedServices",
+   "structuralCluster": "NzbDrone.Common",
+   "pathPrefixes": [
+    "src/NzbDrone.Common/"
+   ],
+   "fileCount": 201,
+   "prefixCoverage": 0.826,
+   "description": "Provides cross-cutting infrastructure utilities including HTTP client, disk I/O, OAuth, and extension methods shared across modules.",
+   "responsibilities": [
+    "HTTP communication",
+    "Disk operations",
+    "OAuth handling",
+    "Utility extensions",
+    "Process management"
+   ]
+  },
+  {
+   "name": "MovieAPI",
+   "structuralCluster": "Radarr.Api.V3",
+   "pathPrefixes": [
+    "src/Radarr.Api.V3/"
+   ],
+   "fileCount": 180,
+   "prefixCoverage": 0.883,
+   "description": "Implements RESTful API v3 endpoints and controllers for movie operations, configuration, indexer management, and system tasks.",
+   "responsibilities": [
+    "Movie endpoints",
+    "Configuration management",
+    "Indexer operations",
+    "Queue handling",
+    "Resource serialization"
+   ]
+  },
+  {
+   "name": "TestingUtils",
+   "structuralCluster": "NzbDrone.Common.Test",
+   "pathPrefixes": [
+    "src/NzbDrone.Common.Test/",
+    "src/NzbDrone.Test.Common/"
+   ],
+   "fileCount": 69,
+   "prefixCoverage": 0.899,
+   "description": "Provides shared testing infrastructure including test fixtures, mock builders, disk test helpers, and common assertions.",
+   "responsibilities": [
+    "Test fixtures",
+    "Mock setup",
+    "Common assertions",
+    "Disk testing utilities",
+    "Fixture builders"
+   ]
+  },
+  {
+   "name": "HTTPInfrastructure",
+   "structuralCluster": "Radarr.Http",
+   "pathPrefixes": [
+    "src/Radarr.Http/Authentication/",
+    "src/Radarr.Http/ClientSchema/",
+    "src/Radarr.Http/Exceptions/",
+    "src/Radarr.Http/Frontend/",
+    "src/Radarr.Http/Middleware/",
+    "src/Radarr.Http/Ping/"
+   ],
+   "fileCount": 53,
+   "prefixCoverage": 0.811,
+   "description": "Handles HTTP middleware, authentication, schema generation, and frontend asset mapping for request/response processing.",
+   "responsibilities": [
+    "Authentication middleware",
+    "Request handling",
+    "Schema generation",
+    "Frontend mapping",
+    "Error management"
+   ]
+  },
+  {
+   "name": "IntegrationTests",
+   "structuralCluster": "NzbDrone.Integration.Test",
+   "pathPrefixes": [
+    "src/NzbDrone.Integration.Test/"
+   ],
+   "fileCount": 35,
+   "prefixCoverage": 1.0,
+   "description": "Provides end-to-end API integration tests with HTTP client operations, fixtures, and helpers for validating API contracts.",
+   "responsibilities": [
+    "API client",
+    "HTTP testing",
+    "Test fixtures",
+    "Validation helpers",
+    "Contract testing"
+   ]
+  },
+  {
+   "name": "UnixAdapters",
+   "structuralCluster": "NzbDrone.Mono",
+   "pathPrefixes": [
+    "src/NzbDrone.Mono.Test/",
+    "src/NzbDrone.Mono/"
+   ],
+   "fileCount": 22,
+   "prefixCoverage": 1.0,
+   "description": "Implements Unix/Linux/macOS platform-specific functionality including disk provider, mount resolution, and OS version detection.",
+   "responsibilities": [
+    "Disk provider",
+    "Mount resolution",
+    "Platform detection",
+    "File operations",
+    "System adapters"
+   ]
+  }
+ ],
+ "reviewHint": "Radarr: src/NzbDrone.Core is the real domain (Movies, Indexers, Download clients, MediaFiles, Notifications under feature folders), src/Radarr.Api.V3 (HTTP API), src/NzbDrone.Common (infra), frontend/ (React UI). Check clusters didn't merge Core feature folders into one blob."
+}

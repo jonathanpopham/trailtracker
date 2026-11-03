@@ -1,0 +1,300 @@
+{
+ "commands": [
+  {
+   "name": "graph",
+   "output": {
+    "format": "jsonl",
+    "notes": "one {record:\"node\"|\"edge\", ...} object per line; --json is a no-op"
+   },
+   "summary": "Analyze DIR (default `.`) and emit the canonical code graph.",
+   "usage": "trailtracker graph [DIR] [--json]"
+  },
+  {
+   "name": "cpg",
+   "output": {
+    "format": "jsonl",
+    "notes": "same record shape as `graph` plus Statement nodes and FLOWS_TO/DATA_DEP edges; --json is a no-op"
+   },
+   "summary": "The base graph plus the deterministic CPG overlay (ADR-0003): intra-function Statement nodes, FLOWS_TO control-flow edges (sequence, branches, loop back-edges, match arms, early returns) and DATA_DEP def-use edges (conservative may-reach, consumer→producer). Output is a strict superset of `graph`; currently Rust functions only.",
+   "usage": "trailtracker cpg [DIR] [--json]"
+  },
+  {
+   "name": "stats",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.stats/v1: {files, lossless_files, parse{...}, nodes{total, by_kind}, edges{total, by_kind}, calls{resolved, ambiguous, external, by_resolution}}"
+   },
+   "summary": "Coverage + graph statistics; use it to judge how much of the repo was understood.",
+   "usage": "trailtracker stats [DIR] [--json]"
+  },
+  {
+   "name": "parse",
+   "output": {
+    "format": "json",
+    "notes": "single-line CST document; --json is a no-op"
+   },
+   "summary": "Emit the lossless CST of one Rust file.",
+   "usage": "trailtracker parse FILE"
+  },
+  {
+   "name": "extract",
+   "output": {
+    "format": "jsonl",
+    "notes": "same record shape as `graph`; --json is a no-op"
+   },
+   "summary": "Apply a derived-view extractor (see `extractors`) and emit its graph.",
+   "usage": "trailtracker extract NAME [DIR] [--json]"
+  },
+  {
+   "name": "export",
+   "output": {
+    "format": "json",
+    "notes": "single {name, nodes, relationships} document with a deterministic seed layout"
+   },
+   "summary": "Emit a view as Ontoloom wire JSON (see `views`), loadable by the Ontoloom editor.",
+   "usage": "trailtracker export ontoloom [DIR] [--view NAME]"
+  },
+  {
+   "name": "dossier",
+   "output": {
+    "format": "text",
+    "notes": "stdout carries only the written file's path; the dossier itself is the HTML file"
+   },
+   "summary": "The client-ready deliverable: analyze DIR and write ONE self-contained HTML file — inline CSS/JS, embedded hierarchy graph, ZERO external requests (airgap-grade) — containing the codebase brief, the interactive Domain→Unit→File→Symbol code map (drill-only click-to-expand, web/tree layouts, search, dependency edges), and the full layer-violations table at unit grain. Byte-deterministic for identical inputs; the generated line attests a content fingerprint, never a wall clock. Default output: <repo-name>-dossier.html in the current directory.",
+   "usage": "trailtracker dossier <DIR> [-o out.html]"
+  },
+  {
+   "name": "deadcode",
+   "output": {
+    "exit_codes": {
+     "0": "no findings at the selected confidence",
+     "1": "findings present at the selected confidence",
+     "2": "invalid flag, value, or config",
+     "3": "path, config, or --why target not found",
+     "4": "analysis failure"
+    },
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.deadcode/v1: {schema, command, dir, summary{symbols,roots,dead{high,medium,transitive}}, findings[{id,path,line,name,kind,tier,reason,evidence{inbound_refs,ambiguous_candidacies,mention_files,exported}}], roots[{id,reason}]}"
+   },
+   "summary": "Rooted mark-and-sweep over the merged graph. Auditable roots include main functions, entrypoint facts, main guards, shebangs, tests, decorators, generated files, and config declarations. Findings are ranked as dead-high, dead-medium, or transitively-dead with inbound, ambiguity, textual-mention, and export evidence. --why prints the shortest deterministic root chain or the evidence proving no path. Deterministic, read-only, no graph mutation.",
+   "usage": "trailtracker deadcode [DIR] [--json] [--min-confidence high|medium|low] [--limit N] [--why TARGET] [--no-test-roots] [--config PATH]"
+  },
+  {
+   "name": "violations",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.violations/v1: {schema, dir, rule, total_edges, unit_pairs, layer_pairs:[{from_layer, to_layer, edges, unit_pairs}], violations:[{from_unit, from_layer, to_unit, to_layer, count, examples[]}], status: clean|violations, exit}"
+   },
+   "summary": "The spec-free full layer-violations report: every DEPENDS-family (CALLS, IMPORTS, USES_TYPE, ...) or SPECIALIZES-family (EXTENDS, IMPLEMENTS — cross-layer inheritance is a violation too) edge that points outward against the clean-architecture direction rule (Domain < Application < Infrastructure < Presentation; Test/Shared exempt), at UNIT grain — from-unit and to-unit with their layers, complete edge counts, and complete symbol-grain evidence (`path:symbol -[KIND]-> path:symbol`; --examples N bounds the list, never the counts) — ranked worst-first and grouped by layer pair. Unit/layer placement is the layers view's recovered assignment (no arch spec needed; use `arch-verify` for spec-driven gating). Deterministic. Exit 0 clean, 1 violations present.",
+   "usage": "trailtracker violations <DIR> [--examples N] [--json]"
+  },
+  {
+   "name": "verbalize",
+   "output": {
+    "format": "text | json",
+    "notes": "text: one sentence per line, glossary lines first. --json emits schema trailtracker.verbalize/v1: {schema, command, dir, view, template_version, glossary:[{handle, expansion}], sentences[], total_sentences, omitted}"
+   },
+   "summary": "The recovered graph as retrieval-safe sentences (ADR-0008): a glossary prelude of dense value-ranked handles (D1 = largest domain, F1 = top hotspot), then one fact per sentence in domain-major order — identity, domain sizes, dependencies with chief target units, fan-in/fan-out and blast radius with denominators, named dependents per hotspot (--view dependents for the relational-lookup document), layer violations, cycles, entry points, flows, parse coverage. Deterministic (byte-identical for the same tree); every sentence passes the grammar conformance checker. --budget N cuts at a character budget and appends an honest omission sentence; --target renders one node's card (resolution: exact id, then file path, then name — ambiguous exits 2 with candidates, unknown exits 3 with suggestions).",
+   "usage": "trailtracker verbalize <DIR> [--view summary|hotspots|dependents|violations|domains|all] [--target ID] [--budget N] [--json]"
+  },
+  {
+   "name": "arch-verify",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.arch-verify/v1: {format, dir, spec, domains, rules, findings:[{id, type, severity, message, count, examples[]}], status: clean|warnings|violated, exit}"
+   },
+   "summary": "Continuous architecture verification (ADR-0005): load the human-authored intent spec (default <DIR>/.trailtracker-arch.json — domains as pathPrefixes plus rules: domain-existence, domain-containment, forbidden-dependency, forbidden-layer-dependency), evaluate it against the ACTUAL recovered graph, and report findings with evidence. Deterministic. Exit 0 spec holds (or warn-only), 1 error-severity findings — the CI gate; a malformed spec is exit 2, a missing DIR/spec is exit 3.",
+   "usage": "trailtracker arch-verify [DIR] [--spec PATH] [--json]"
+  },
+  {
+   "name": "arch-init",
+   "output": {
+    "format": "json",
+    "notes": "a trailtracker.arch-spec/v1 document, pretty-printed for hand editing; with -o, stdout carries only the written file's path"
+   },
+   "summary": "Bootstrap a .trailtracker-arch.json spec from the CURRENT recovered architecture: business domains with derived pathPrefixes (dominant-prefix set-cover), domain-existence (error) + domain-containment (warn) rules, and the observed inter-domain dependencies as an advisory baseline to promote into forbidden-dependency rules. Prints to stdout (redirect to adopt); -o writes a file and refuses to overwrite.",
+   "usage": "trailtracker arch-init [DIR] [-o PATH]"
+  },
+  {
+   "name": "query",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits one structured object per query"
+   },
+   "summary": "Ask the graph a question (see `query_kinds`). TARGET is a node name or exact id.",
+   "usage": "trailtracker query KIND [TARGET] [DIR] [--json]"
+  },
+  {
+   "name": "explain",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.explain/v1: {dir, target, identity{id, name, kind, path, line, qualified_name}, classification{domain, layer, archetype}, connectivity{fan_in, fan_out, dependents[], dependencies[]}, blast_radius{count, examples[]}, neighbors:[{rank, id, name, kind, path, score, why[]}]}"
+   },
+   "summary": "The atomic understanding primitive: one card for a file or symbol — identity (name, kind, path:line, qualified name), classification (domain, layer, archetype), connectivity (fan-in/fan-out with top dependents/dependencies), blast radius (reverse reachability, same machinery as `query blast-radius`), and nearest neighbors (hybrid search, each with why-evidence). Targets resolve exact node id, then exact file path, then exact name; an ambiguous name exits 2 with the candidate list, an unknown target exits 3 with search suggestions.",
+   "usage": "trailtracker explain <id-or-path-or-name> [DIR] [--json]"
+  },
+  {
+   "name": "search",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.search/v1: {query, dir, total, results:[{rank, id, name, kind, path, score, why[]}]}; ranks are 1-based, results sorted best-first"
+   },
+   "summary": "Hybrid code search over the graph: BM25 + hash-embedding rank fusion (RRF), re-ranked by graph proximity to the top lexical anchors. Deterministic, no LLM. Every hit explains itself (`why`: bm25/embed rank, hops from anchor). Default limit 20.",
+   "usage": "trailtracker search \"<query>\" [DIR] [--limit N] [--json]"
+  },
+  {
+   "name": "nav",
+   "output": {
+    "format": "text | json | prose",
+    "notes": "--json emits schema trailtracker.nav-pack/v1: {query, dir, budget{budget_chars, used_chars, estimated_chars, truncated, exceeded, omitted{}}, seeds[], cards[], orientation{domains[], layers[]}, read_plan:[{path, start_line, end_line?, id, name, kind, why}], neighborhood{depth, node_count, edge_count_total, edges[]}} — or trailtracker.nav-expand/v1: {target, identity{}, direction, depth, budget{...}, total_edges, cursor, returned, truncated, next_cursor, nodes[], edges:[{from, kind, to, hops}]}. --format prose renders the same value-ranked selection as deterministic ADR-0008 sentences (glossary prelude, read-plan spans as facts) with the char budget honest over the prose — feed it to any model directly"
+   },
+   "summary": "The context-efficient codebase navigator (ADR-0004): exact, deterministic, character-budgeted subgraphs for agents working large codebases. `nav pack` turns a task query into one context pack — seeds (hybrid search hits with why-evidence), compact per-seed cards (domain/layer/archetype, fan-in/out, blast-radius count), a domain/layer orientation summary, a ranked read-plan of file:line SPANS (never whole files), and the 2-hop DEPENDS-family neighborhood edge list — the highest-value exact subgraph that fits the budget. `nav expand` grows the exact neighborhood from any node, direction-aware and depth-bounded, with a continuation cursor. --budget is a character budget (proxy for the consuming agent's context window): no LLM, no tokenizer, budgets are exact char counts over the JSON serialization, and every response reports budget_chars/used_chars/estimated_chars plus exact per-section omission counts. Targets resolve like `explain` (exact id -> file path -> name; ambiguous exits 2, unknown exits 3).",
+   "usage": "trailtracker nav pack \"<task query>\" [DIR] [--budget CHARS] [--format json|text|prose] [--json] | trailtracker nav expand <target> [DIR] [--depth K] [--direction callers|callees|both] [--budget CHARS] [--cursor N] [--format json|text|prose] [--json]"
+  },
+  {
+   "name": "report",
+   "output": {
+    "format": "markdown | html | json",
+    "notes": "--json wraps the markdown in schema trailtracker.markdown/v1"
+   },
+   "summary": "Deterministic markdown org/codebase summary. With --full: the full evidence report — executive summary in verbalizer prose, domains table, change-risk centers with their actual named callers grouped by domain, EVERY layer-violating edge at symbol grain (inheritance included; --examples N caps evidence lists, never counts), structural findings (named cycles, largest declaration unit, misplaced tests, unlexable bytes), and a domains-only coupling appendix. --format both writes PATH.md + PATH.html (self-contained HTML with collapsible evidence and an embedded copy-to-clipboard companion); with -o, stdout carries only the written paths.",
+   "usage": "trailtracker report [DIR] [--json] | trailtracker report --full <DIR> [-o PATH] [--format md|html|both] [--examples N] [--budget N] [--json]"
+  },
+  {
+   "name": "brief",
+   "output": {
+    "format": "markdown | json",
+    "notes": "--json emits schema trailtracker.brief/v1: {overview{languages[]}, architecture{largest_units[], module_dependencies[]}, entry_points{mains[], public_api[]}, hotspots{fan_in[], fan_out[]}, cycles[][], synthesis}"
+   },
+   "summary": "The best first call on an unfamiliar repo: overview, architecture, entry points, hotspots, cycles, synthesis.",
+   "usage": "trailtracker brief [DIR] [--json]"
+  },
+  {
+   "name": "rebuild-brief",
+   "output": {
+    "format": "markdown | json",
+    "notes": "--json wraps the markdown in schema trailtracker.markdown/v1"
+   },
+   "summary": "Self-contained markdown rebuild brief for one workflow.",
+   "usage": "trailtracker rebuild-brief <flow-name-or-id> [DIR] [--json]"
+  },
+  {
+   "name": "rewrite",
+   "output": {
+    "format": "diff | json",
+    "notes": "propose: unified diff on stdout (--json: the trailtracker.rewrite-proposal/v1 document {schema, rule{id,version}, dir, file, file_fingerprint, edits:[{span{start,end}, before, after, why_safe, cpg_facts[]}], rejections:[{span, reason, detail}], proposal_hash}); verify: human summary (--json: trailtracker.rewrite-cert/v1 {schema, rule, schema_obligation{ref,kani}, proposal_hash, dir, file, before_fingerprint, after_fingerprint, before_cpg_hash, after_cpg_hash, functions{affected[],unaffected_verified}, checks[], assumptions[], cert_hash}); apply: a one-line report (--json: trailtracker.rewrite-apply/v1, cert_hash always present); rules: the vocabulary (--json: trailtracker.rewrite-rules/v1)"
+   },
+   "summary": "Propose-then-approve span rewrites (ADR-0006) with equivalence certificates (ADR-0007) — the ONLY code-modifying capability, and it never modifies anything in one step. `propose` analyzes and emits a unified diff (stdout) plus a hash-bound trailtracker.rewrite-proposal/v1 document (-o writes it; --json emits it instead of the diff); it NEVER writes source, has no --apply flag, and refuses to emit a non-empty proposal it cannot certify (with -o it writes the trailtracker.rewrite-cert/v1 certificate to <stem>.cert.json). `verify` is the independent checker: from the original file and the proposal alone it recomputes the before/after statement CPGs, verifies the rule's licensed remapping (ADR-0007), replays the licensed emission byte-for-byte, and emits the certificate — exit 0 verified, exit 4 names the exact failed check. `apply` is the only writing path: it refuses unless the proposal hash verifies, the target file's current fingerprint matches, and every edit's `before` text still matches its span; the full equivalence verification then runs BY DEFAULT (K3d) and refuses on any failed check — --require-cert re-asserts that default (kept for compatibility), no opt-out. Writes are atomic and touch only the proposed spans. `rules` lists the rule vocabulary: dead-branch-elim, loop-to-iterator, extract-function, redundant-clone-elim. Recognizers are conservative: near-miss sites are reported as rejections with machine-readable snake_case reasons. Proposals and certificates contain no timestamp: same binary + same file => byte-identical documents, hashes included.",
+   "usage": "trailtracker rewrite propose <rule> <FILE> [DIR] [--lines A-B] [--name NAME] [-o proposal.json] [--json] | trailtracker rewrite verify --proposal proposal.json [DIR] [-o cert.json] [--json] | trailtracker rewrite apply --proposal proposal.json [DIR] [--require-cert] [--json] | trailtracker rewrite rules [--json]"
+  },
+  {
+   "name": "doctor",
+   "output": {
+    "format": "text | json",
+    "notes": "--json emits schema trailtracker.doctor/v1: {status, exit_code, summary, checks[], findings[], fix, run, artifact}; run artifacts land in <DIR>/.doctor/runs/<run-id>/ (content-derived run id; byte-deterministic)"
+   },
+   "summary": "Self-diagnose the tool + environment against DIR (default `.`): version/build, analysis, parse failures, losslessness, extractors, determinism. Read-only (advisory fixes only); exit 0 healthy, 1 findings. Sub-verbs: `doctor capabilities` (contract), `doctor robot-docs` (agent handbook).",
+   "usage": "trailtracker doctor [DIR] [--json] [--quick] [--fix] [--dry-run] [--no-artifact]"
+  },
+  {
+   "name": "capabilities",
+   "output": {
+    "format": "json",
+    "notes": "schema trailtracker.capabilities/v1"
+   },
+   "summary": "This machine-readable contract.",
+   "usage": "trailtracker capabilities"
+  },
+  {
+   "name": "version",
+   "output": {
+    "format": "text",
+    "notes": "also available as --version / -V"
+   },
+   "summary": "Print `trailtracker <semver>`.",
+   "usage": "trailtracker version"
+  },
+  {
+   "name": "help",
+   "output": {
+    "format": "text | json",
+    "notes": "bare `trailtracker` prints the same overview"
+   },
+   "summary": "Human overview; --json returns this capabilities document.",
+   "usage": "trailtracker help [--json]"
+  }
+ ],
+ "description": "Airgap-safe code ontology and graph extractor: deterministic code graphs and derived ontology views computed locally. This binary contains no network-capable or model-invoking code paths — no LLM, no network, nothing that shells out to one.",
+ "error_shape": {
+  "line_1": "trailtracker: <what went wrong>",
+  "line_2": "  fix: <how to fix it> (optional)",
+  "stream": "stderr"
+ },
+ "exit_codes": {
+  "0": "success",
+  "1": "doctor/arch-verify/violations/deadcode only: findings present (unhealthy target or tool, architecture/layer violations, or dead-code findings)",
+  "2": "usage error (bad command, flag, or argument)",
+  "3": "path not found or unreadable",
+  "4": "analysis failure (internal error)"
+ },
+ "export_formats": [
+  "ontoloom"
+ ],
+ "extractors": [
+  "data-ontology",
+  "layers",
+  "lexicon",
+  "workflow-spec",
+  "archetypes",
+  "domains",
+  "hierarchy"
+ ],
+ "global_flags": [
+  {
+   "flag": "--json",
+   "meaning": "machine-readable output; a no-op on commands whose output is already JSON (graph, extract, export, parse)"
+  },
+  {
+   "flag": "--robot",
+   "meaning": "synonym for --json"
+  },
+  {
+   "flag": "--incremental",
+   "meaning": "opt-in incremental analysis: cache per-language-batch lowered subgraphs under <DIR>/.trailtracker-cache (override with TRAILTRACKER_CACHE_DIR; TRAILTRACKER_CACHE=1 enables without the flag) and reuse them for unchanged files. Output is byte-identical to an uncached run; a no-op on commands that do not analyze a directory"
+  },
+  {
+   "flag": "--no-ignore",
+   "meaning": "analyze everything on disk. By default, when DIR is a git checkout (a .git entry exists directly under it), files matched by its layered .gitignore rules are excluded from the walk — untracked build outputs (minified bundles, bin/obj, coverage) are not source and corrupt stats and every derived view. Trees without .git are never filtered; a no-op on commands that do not analyze a directory"
+  }
+ ],
+ "io_contract": {
+  "determinism": "byte-identical output for identical input trees",
+  "stderr": "diagnostics only",
+  "stdout": "data only"
+ },
+ "name": "trailtracker",
+ "query_kinds": [
+  "what-touches",
+  "blast-radius",
+  "uses",
+  "deepest-flows"
+ ],
+ "recommended_first_calls": [
+  "trailtracker brief DIR --json",
+  "trailtracker stats DIR --json",
+  "trailtracker extract domains DIR",
+  "trailtracker doctor DIR --json"
+ ],
+ "schema": "trailtracker.capabilities/v1",
+ "version": "0.1.0",
+ "views": [
+  "graph",
+  "data-ontology",
+  "layers",
+  "lexicon",
+  "workflow-spec",
+  "archetypes",
+  "domains",
+  "hierarchy"
+ ]
+}

@@ -1,0 +1,240 @@
+{
+ "repo": "jellyfin",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:8923d13f28e79c14 timestamp=2026-07-07T13:11:58Z)",
+ "date": "2026-07-07",
+ "sha": "e31f168e9bc132b4f830e39b0781cac550c08b85",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "LibraryCore",
+   "structuralCluster": "MediaBrowser.Controller",
+   "pathPrefixes": [
+    "Emby.Server.Implementations/",
+    "MediaBrowser.Controller/Channels/",
+    "MediaBrowser.Controller/Drawing/",
+    "MediaBrowser.Controller/Entities/",
+    "MediaBrowser.Controller/Events/",
+    "MediaBrowser.Controller/Library/",
+    "MediaBrowser.Controller/Net/",
+    "MediaBrowser.Controller/Persistence/",
+    "MediaBrowser.Controller/SyncPlay/",
+    "MediaBrowser.Model/SyncPlay/",
+    "tests/Jellyfin.Server.Implementations.Tests/Library/"
+   ],
+   "fileCount": 529,
+   "prefixCoverage": 0.807,
+   "description": "Core library management with media items, folders, sessions, synchronization, and user data tracking.",
+   "responsibilities": [
+    "Manage media items and folders",
+    "Handle library queries",
+    "Coordinate session management",
+    "Sort and filter content",
+    "Track user data"
+   ]
+  },
+  {
+   "name": "DomainModel",
+   "structuralCluster": "MediaBrowser.Model",
+   "pathPrefixes": [
+    "MediaBrowser.Model/"
+   ],
+   "fileCount": 313,
+   "prefixCoverage": 0.895,
+   "description": "Shared data transfer objects, configuration enums, and core domain type definitions across all layers.",
+   "responsibilities": [
+    "Define DTOs and contracts",
+    "Specify configuration schemas",
+    "Document media types and enums",
+    "Represent stream information"
+   ]
+  },
+  {
+   "name": "ApiGateway",
+   "structuralCluster": "Jellyfin.Api",
+   "pathPrefixes": [
+    "Jellyfin.Api/",
+    "MediaBrowser.Controller/MediaEncoding/",
+    "src/Jellyfin.Extensions/"
+   ],
+   "fileCount": 252,
+   "prefixCoverage": 0.861,
+   "description": "REST API controllers and HTTP endpoint handlers for all Jellyfin client-facing operations.",
+   "responsibilities": [
+    "Handle REST endpoints",
+    "Manage HTTP requests",
+    "Apply authentication",
+    "Model API contracts"
+   ]
+  },
+  {
+   "name": "DataLayer",
+   "structuralCluster": "Jellyfin",
+   "pathPrefixes": [
+    "Jellyfin.Server.Implementations/",
+    "src/Jellyfin.Database/"
+   ],
+   "fileCount": 224,
+   "prefixCoverage": 0.938,
+   "description": "Database persistence layer with Entity Framework entities, context management, and concurrency control.",
+   "responsibilities": [
+    "Store and retrieve entities",
+    "Manage database context",
+    "Handle concurrency locking",
+    "Persist user and media"
+   ]
+  },
+  {
+   "name": "MetadataProviders",
+   "structuralCluster": "MediaBrowser.Providers",
+   "pathPrefixes": [
+    "MediaBrowser.Controller/Providers/",
+    "MediaBrowser.Providers/"
+   ],
+   "fileCount": 211,
+   "prefixCoverage": 0.934,
+   "description": "External metadata aggregation and plugin framework integrating sources like TMDB, OMDB, and AudioDB.",
+   "responsibilities": [
+    "Aggregate external metadata",
+    "Manage provider plugins",
+    "Cache metadata results",
+    "Resolve metadata lookups"
+   ]
+  },
+  {
+   "name": "LiveTvService",
+   "structuralCluster": "Jellyfin.LiveTv",
+   "pathPrefixes": [
+    "MediaBrowser.Controller/LiveTv/",
+    "src/Jellyfin.LiveTv/"
+   ],
+   "fileCount": 110,
+   "prefixCoverage": 0.9,
+   "description": "Live television services including channels, electronic guides, recordings, and tuner host management.",
+   "responsibilities": [
+    "Manage TV channels",
+    "Provide program listings",
+    "Handle recording operations",
+    "Coordinate tuner hosts"
+   ]
+  },
+  {
+   "name": "FileNaming",
+   "structuralCluster": "Emby.Naming",
+   "pathPrefixes": [
+    "Emby.Naming/",
+    "tests/Jellyfin.Naming.Tests/"
+   ],
+   "fileCount": 73,
+   "prefixCoverage": 0.986,
+   "description": "File naming convention parsing for episodes, videos, and audiobooks with pattern recognition.",
+   "responsibilities": [
+    "Parse video filenames",
+    "Identify episodes and seasons",
+    "Resolve multi-part files",
+    "Extract naming patterns"
+   ]
+  },
+  {
+   "name": "InfrastructureServices",
+   "structuralCluster": "MediaBrowser.Common",
+   "pathPrefixes": [
+    "MediaBrowser.Common/",
+    "src/Jellyfin.Networking/"
+   ],
+   "fileCount": 51,
+   "prefixCoverage": 0.863,
+   "description": "Infrastructure services for networking, plugin management, configuration, and authentication policies.",
+   "responsibilities": [
+    "Manage network configuration",
+    "Provide plugin system",
+    "Handle app configuration",
+    "Implement authentication"
+   ]
+  },
+  {
+   "name": "TestUtilities",
+   "structuralCluster": "Jellyfin.Extensions.Tests",
+   "pathPrefixes": [
+    "Jellyfin.Data/",
+    "tests/Jellyfin.Extensions.Tests/"
+   ],
+   "fileCount": 44,
+   "prefixCoverage": 0.955,
+   "description": "Test infrastructure providing fixtures, event types, and authentication helpers for unit and integration tests.",
+   "responsibilities": [
+    "Provide test fixtures",
+    "Define event types",
+    "Support test authentication",
+    "Share test extensions"
+   ]
+  },
+  {
+   "name": "TranscodeEngine",
+   "structuralCluster": "MediaBrowser.MediaEncoding",
+   "pathPrefixes": [
+    "MediaBrowser.MediaEncoding/",
+    "tests/Jellyfin.MediaEncoding.Tests/"
+   ],
+   "fileCount": 34,
+   "prefixCoverage": 1.0,
+   "description": "Media encoding and transcoding via FFmpeg with file probing, subtitle extraction, and format conversion.",
+   "responsibilities": [
+    "Encode media formats",
+    "Probe media files",
+    "Extract subtitles",
+    "Manage transcoding jobs"
+   ]
+  },
+  {
+   "name": "ServerBootstrap",
+   "structuralCluster": "Jellyfin.Server",
+   "pathPrefixes": [
+    "Jellyfin.Server/"
+   ],
+   "fileCount": 31,
+   "prefixCoverage": 0.968,
+   "description": "Application server initialization with API configuration, service setup, and startup orchestration.",
+   "responsibilities": [
+    "Initialize application startup",
+    "Configure API services",
+    "Setup web server",
+    "Apply migrations"
+   ]
+  },
+  {
+   "name": "XbmcMetadata",
+   "structuralCluster": "MediaBrowser.XbmcMetadata",
+   "pathPrefixes": [
+    "MediaBrowser.XbmcMetadata/"
+   ],
+   "fileCount": 28,
+   "prefixCoverage": 0.964,
+   "description": "XBMC/Kodi NFO metadata format support for reading, parsing, and writing media metadata.",
+   "responsibilities": [
+    "Parse NFO files",
+    "Save NFO metadata",
+    "Handle actor information",
+    "Manage media info"
+   ]
+  },
+  {
+   "name": "LocalMetadataProviders",
+   "structuralCluster": "MediaBrowser.LocalMetadata",
+   "pathPrefixes": [
+    "MediaBrowser.LocalMetadata/"
+   ],
+   "fileCount": 14,
+   "prefixCoverage": 1.0,
+   "description": "Local filesystem metadata providers parsing XML files and images from media libraries.",
+   "responsibilities": [
+    "Read local metadata files",
+    "Parse XML and images",
+    "Provide local metadata",
+    "Save metadata locally"
+   ]
+  }
+ ],
+ "reviewHint": "Jellyfin's real split: Jellyfin.Api (HTTP controllers), MediaBrowser.Controller (abstractions/interfaces), Emby.Server.Implementations (concrete services), MediaBrowser.Model (DTOs), Jellyfin.Server (host), MediaBrowser.MediaEncoding (ffmpeg). A good GT keeps the server/controller (implementation vs abstraction) split visible rather than merging by feature noun."
+}

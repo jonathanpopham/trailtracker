@@ -1,0 +1,6 @@
+# Pin the toolchain so builds are reproducible and CI matches local exactly.
+# Bumping this channel is a deliberate step (and may surface new clippy lints to
+# clear before merging).
+[toolchain]
+channel = "1.90.0"
+components = ["rustfmt", "clippy"]

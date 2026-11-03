@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Intake</label>
+    <status>Active</status>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Find_Patient</name>
+        <object>Contact</object>
+    </recordLookups>
+    <recordCreates>
+        <name>Create_Case</name>
+        <object>Case__c</object>
+    </recordCreates>
+    <actionCalls>
+        <name>Notify_Team</name>
+        <actionName>CareTeamNotifier</actionName>
+        <actionType>apex</actionType>
+    </actionCalls>
+    <subflows>
+        <name>Schedule_FollowUp</name>
+        <flowName>FollowUp</flowName>
+    </subflows>
+</Flow>

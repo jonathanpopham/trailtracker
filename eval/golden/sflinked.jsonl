@@ -1,0 +1,26 @@
+{"id":"file::force-app/main/default/classes/ContactVerifier.cls","kind":"File","name":"ContactVerifier.cls","properties":{"bytes":401,"extension":"cls","language":"apex","lines":9,"path":"force-app/main/default/classes/ContactVerifier.cls"},"record":"node"}
+{"id":"file::force-app/main/default/flows/ContactIntake.flow-meta.xml","kind":"File","name":"ContactIntake.flow-meta.xml","properties":{"bytes":470,"language":"salesforce-metadata","path":"force-app/main/default/flows/ContactIntake.flow-meta.xml"},"record":"node"}
+{"id":"flow::ContactIntake","kind":"Function","name":"ContactIntake","properties":{"depth":2,"element_count":2,"label":"Contact Intake","language":"salesforce-metadata","path":"force-app/main/default/flows/ContactIntake.flow-meta.xml","process_type":"Flow","status":"Active","type_kind":"flow"},"record":"node"}
+{"id":"flow_element::ContactIntake.Verify","kind":"Function","name":"Verify","properties":{"element_kind":"actionCalls","flow":"ContactIntake","language":"salesforce-metadata","type_kind":"flow_element"},"record":"node"}
+{"id":"flow_element::ContactIntake.start","kind":"Function","name":"start","properties":{"element_kind":"start","flow":"ContactIntake","language":"salesforce-metadata","type_kind":"flow_element"},"record":"node"}
+{"id":"fn::ContactVerifier.verifyContact#4","kind":"Function","name":"verifyContact","properties":{"annotations":["InvocableMethod"],"has_body":true,"invocable":true,"is_method":true,"is_static":true,"language":"apex","line":4,"qualified_name":"ContactVerifier.verifyContact","receiver_type":"ContactVerifier","span_end":398,"span_start":131},"record":"node"}
+{"id":"pkg::sflinked","kind":"Package","name":"sflinked","properties":{"ecosystem":"salesforce-metadata"},"record":"node"}
+{"id":"sobject::Contact","kind":"Type","name":"Contact","properties":{"language":"salesforce-metadata","type_kind":"sobject"},"record":"node"}
+{"id":"type::ContactVerifier","kind":"Type","name":"ContactVerifier","properties":{"language":"apex","line":2,"qualified_name":"ContactVerifier","span_end":400,"span_start":83,"type_kind":"class"},"record":"node"}
+{"id":"unresolved::debug","kind":"UnresolvedSymbol","name":"debug","properties":{"role":"call","unresolved":true},"record":"node"}
+{"id":"unresolved::sf_action::VerifyContact","kind":"UnresolvedSymbol","name":"VerifyContact","properties":{"action_type":"apex","reference_kind":"salesforce_action","resolved":true,"resolved_target":"fn::ContactVerifier.verifyContact#4"},"record":"node"}
+{"id":"unresolved::size","kind":"UnresolvedSymbol","name":"size","properties":{"role":"call","unresolved":true},"record":"node"}
+{"from":"file::force-app/main/default/classes/ContactVerifier.cls","kind":"DECLARES","properties":{},"record":"edge","to":"fn::ContactVerifier.verifyContact#4"}
+{"from":"file::force-app/main/default/classes/ContactVerifier.cls","kind":"DECLARES","properties":{},"record":"edge","to":"type::ContactVerifier"}
+{"from":"file::force-app/main/default/flows/ContactIntake.flow-meta.xml","kind":"DECLARES","properties":{},"record":"edge","to":"flow::ContactIntake"}
+{"from":"flow::ContactIntake","kind":"DECLARES","properties":{},"record":"edge","to":"flow_element::ContactIntake.Verify"}
+{"from":"flow::ContactIntake","kind":"DECLARES","properties":{},"record":"edge","to":"flow_element::ContactIntake.start"}
+{"from":"flow_element::ContactIntake.Verify","kind":"CALLS","properties":{"resolved_by":"linker","via":"actionCalls"},"record":"edge","to":"fn::ContactVerifier.verifyContact#4"}
+{"from":"flow_element::ContactIntake.Verify","kind":"CALLS","properties":{"via":"actionCalls"},"record":"edge","to":"unresolved::sf_action::VerifyContact"}
+{"from":"flow_element::ContactIntake.start","kind":"FLOWS_TO","properties":{"via":"connector"},"record":"edge","to":"flow_element::ContactIntake.Verify"}
+{"from":"fn::ContactVerifier.verifyContact#4","kind":"CALLS","properties":{"callee":"debug","candidate_count":0,"method":true,"resolution":"external","resolved":false},"record":"edge","to":"unresolved::debug"}
+{"from":"fn::ContactVerifier.verifyContact#4","kind":"CALLS","properties":{"callee":"size","candidate_count":0,"method":true,"resolution":"external","resolved":false},"record":"edge","to":"unresolved::size"}
+{"from":"fn::ContactVerifier.verifyContact#4","kind":"USES_TYPE","properties":{"sobject":"Contact","via":"soql"},"record":"edge","to":"sobject::Contact"}
+{"from":"pkg::sflinked","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/classes/ContactVerifier.cls"}
+{"from":"pkg::sflinked","kind":"CONTAINS","properties":{},"record":"edge","to":"file::force-app/main/default/flows/ContactIntake.flow-meta.xml"}
+{"from":"type::ContactVerifier","kind":"HAS_METHOD","properties":{},"record":"edge","to":"fn::ContactVerifier.verifyContact#4"}

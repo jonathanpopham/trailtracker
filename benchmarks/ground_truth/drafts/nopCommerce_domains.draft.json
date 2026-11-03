@@ -1,0 +1,63 @@
+{
+ "repo": "nopCommerce",
+ "REVIEW-REQUIRED": "DRAFT \u2014 machine-derived from the extractor's own clusters (circular: scoring it against the extractor validates format, not truth). A human must review names + prefixes against the project's real architecture before this file may move to ground_truth/. See drafts/README.md for the review protocol.",
+ "source": "DRAFT auto-derived from trailtracker's own deterministic clusters; names via attested enrich-domains (backend=claude -p --output-format json --model haiku model=claude-haiku-4-5-20251001 prompt_hash=fnv1a64:76cedfa99661cfb7 timestamp=2026-07-07T13:09:43Z)",
+ "date": "2026-07-07",
+ "sha": "42f2a9ac537702679bef62a0600cf9afcbfe8ccc",
+ "format": "pathPrefixes: a file belongs to a ground-truth domain iff its repo-relative path starts with one of the prefixes. Files matching no domain are out-of-scope and excluded from purity.",
+ "derivation": "prefixes = greedy cover of each cluster's member files by directory prefixes owned >= 80% by the cluster (full paths as last resort), target coverage >= 80%; infrastructure groups dropped.",
+ "domains": [
+  {
+   "name": "WebPresentation",
+   "structuralCluster": "Presentation",
+   "pathPrefixes": [
+    "src/Presentation/"
+   ],
+   "fileCount": 1786,
+   "prefixCoverage": 0.985,
+   "description": "Delivers web-based user interfaces for admin panels and storefronts using ASP.NET Core MVC controllers, view models, and components.",
+   "responsibilities": [
+    "Admin panel interface",
+    "Public storefront views",
+    "MVC controller logic",
+    "View model composition",
+    "Web asset delivery"
+   ]
+  },
+  {
+   "name": "CoreServices",
+   "structuralCluster": "Libraries",
+   "pathPrefixes": [
+    "src/Libraries/"
+   ],
+   "fileCount": 1292,
+   "prefixCoverage": 0.858,
+   "description": "Provides core business logic, domain entities, data persistence through repositories, and configuration services for orders, catalog, and customers.",
+   "responsibilities": [
+    "Business logic services",
+    "Data repository access",
+    "Domain entity modeling",
+    "Configuration management",
+    "Order processing"
+   ]
+  },
+  {
+   "name": "PluginIntegrations",
+   "structuralCluster": "Plugins",
+   "pathPrefixes": [
+    "src/Plugins/"
+   ],
+   "fileCount": 893,
+   "prefixCoverage": 0.998,
+   "description": "Implements extensible payment processors, tax calculators, forum features, and third-party service integrations through a plugin architecture.",
+   "responsibilities": [
+    "Payment processor plugins",
+    "Tax calculation engines",
+    "Third-party connectors",
+    "Feature plugin extensions",
+    "Webhook event handling"
+   ]
+  }
+ ],
+ "reviewHint": "nopCommerce layered monolith: src/Libraries/Nop.Core (domain entities), Nop.Data (EF), Nop.Services (business services by area: Catalog/Orders/Customers/...), src/Presentation/Nop.Web (+ Framework). Decide whether GT domains should be layers (as the code is organized) or commerce features (Catalog/Order/Customer) that cut across Nop.Services + Nop.Web."
+}

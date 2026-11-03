@@ -1,0 +1,5 @@
+{"id":"domain::area","kind":"Module","name":"area","properties":{"confidence":"high","domain":"area","file_count":1,"kind":"business","label":"area","symbol_count":9,"unit_count":1,"view":"domains"},"record":"node"}
+{"id":"subdomain::area::(root)","kind":"Module","name":"(root)","properties":{"domain":"area","file_count":1,"subdomain":"(root)","symbol_count":9,"view":"domains"},"record":"node"}
+{"id":"unit::src/lib.rs","kind":"File","name":"lib.rs","properties":{"domain":"area","path":"src/lib.rs","symbol_count":9,"unit":"(root)","view":"domains"},"record":"node"}
+{"from":"domain::area","kind":"CONTAINS","properties":{},"record":"edge","to":"subdomain::area::(root)"}
+{"from":"domain::area","kind":"CONTAINS","properties":{},"record":"edge","to":"unit::src/lib.rs"}

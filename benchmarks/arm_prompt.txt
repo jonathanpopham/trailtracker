@@ -1,0 +1,19 @@
+You are reimplementing a Salesforce Flow as a standalone TypeScript function.
+The flow's source (a .flow-meta.xml file) is in the current directory — read it.
+If a REBUILD_BRIEF.md file is present, use it to help you.
+
+Produce two things:
+1. A TypeScript function that replicates the flow's behavior against a generic
+   data client with query(object, criteria, fields) / create(object, fields) /
+   update(object, id, fields) methods.
+2. A structured operation-set describing exactly what the flow does, emitted
+   VERBATIM between <OPERATIONS> and </OPERATIONS> as one JSON object with this
+   schema (list EVERY object, field written/read, call, input, output):
+   {"objects":[...],
+    "mutations":[{"op":"create|update|delete","object":"...","fields":[...]}],
+    "queries":[{"object":"...","fields":[...]}],
+    "calls":[...],
+    "inputs":[...],
+    "outputs":[...]}
+
+Be complete and precise. Output the TypeScript first, then the <OPERATIONS> block.

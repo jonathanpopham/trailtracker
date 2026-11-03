@@ -1,0 +1,165 @@
+---
+title: Agents & MCP
+description: The 17 MCP tools, the .mcp.json snippet, the paged envelope, structured errors, and hybrid search with why-explainability.
+---
+
+import { Callout } from 'nextra/components'
+
+# Agents & MCP
+
+`mcp/trailtracker_mcp.py` exposes the engine to coding agents as **17 MCP
+tools**, so an agent loads only the relevant subgraph of a huge codebase
+instead of stuffing files into context. It is a single Python 3 stdlib file —
+no pip, nothing to install — and pure orchestration: every tool shells out to
+the `trailtracker` binary, so the no-LLM, no-network, deterministic properties
+carry through. The only side effect is spawning the binary.
+
+```
+Claude Code  ── stdio JSON-RPC 2.0 ──>  mcp/trailtracker_mcp.py  ── argv ──>  trailtracker <cmd> <dir>
+                                        (Python 3 stdlib only)                 (std-only Rust binary)
+```
+
+## Wiring into Claude Code
+
+Add to the project's `.mcp.json` (or merge into an existing `mcpServers` map):
+
+```json filename=".mcp.json"
+{
+  "mcpServers": {
+    "trailtracker": {
+      "command": "python3",
+      "args": ["/path/to/trailtracker/mcp/trailtracker_mcp.py"]
+    }
+  }
+}
+```
+
+Tools then appear as `mcp__trailtracker__brief`,
+`mcp__trailtracker__domains`, and so on. The server resolves the binary per
+call — `TRAILTRACKER_BIN` env var first, then `target/release/trailtracker`
+next to `mcp/`, then a default checkout location — so building the binary
+after server start Just Works, and a missing binary returns a structured
+`BINARY_MISSING` error with build instructions. Optional env:
+`TRAILTRACKER_TIMEOUT_SECS` (default 300), `TRAILTRACKER_MCP_LOG=debug`.
+
+## The 17 tools
+
+Every tool takes a required `repo_path` (absolute path of the directory to
+analyze). Results come back as one `text` content item.
+
+| Tool | Binary command | Returns | Paged |
+|---|---|---|---|
+| `brief` | `trailtracker brief` | Markdown codebase brief. **Recommended first call.** | no |
+| `stats` | `trailtracker stats` | Coverage + graph statistics (trust calibration). | no |
+| `search` | `trailtracker search` | Ranked hits with `why` explanations. | no (limit ≤ 200) |
+| `explain` | `trailtracker explain` | One card per file/symbol: identity, classification, fan-in/out, blast radius, neighbors. | no |
+| `graph` | `trailtracker graph` | Full canonical graph, JSON envelope. | **yes** |
+| `domains` | `extract domains` | Business-domain clustering. | yes |
+| `archetypes` | `extract archetypes` | Structural role classification. | yes |
+| `layers` | `extract layers` | Architectural layers + violations. | yes |
+| `lexicon` | `extract lexicon` | Codebase vocabulary (concept tokens). | yes |
+| `hierarchy` | `extract hierarchy` | Domain→Unit→File→Symbol tree. | yes |
+| `data_ontology` | `extract data-ontology` | Entity/field/relationship data model. | yes |
+| `workflow_spec` | `extract workflow-spec` | Recovered end-to-end flows. | yes |
+
+Tool names are snake_case (agent-friendly); the server maps them to the
+binary's kebab-case extractor names.
+
+The server's `initialize.instructions` field tells the agent the intended
+order: `brief` for orientation → `stats` to judge coverage → `search` to find
+symbols by concept → `explain` on the specific symbol you are about to touch →
+`domains`/`hierarchy`/`layers` to navigate → `graph` (paged) only for raw
+nodes and edges.
+
+## Search with why-explainability
+
+The `search` tool is hybrid retrieval without a model: BM25 lexical ranking
+fused (reciprocal-rank) with deterministic hash embeddings, then re-ranked by
+graph proximity to the top lexical anchors. Typos and morphological
+near-misses are absorbed by the embedding tier. Every hit carries a `why`
+array explaining its rank:
+
+```json
+{
+  "rank": 1,
+  "id": "fn::crate::lang::apex::tests::lossless_round_trip#68",
+  "name": "lossless_round_trip",
+  "kind": "Function",
+  "score": 0.035564663023679416,
+  "why": ["bm25 #1", "embed #1", "2 hops from lossless_round_trip"]
+}
+```
+
+An agent (or a human reviewing an agent's work) never has to take a ranking on
+faith — the lexical rank, embedding rank, and graph distance are all stated.
+
+<Callout type="info">
+  Scope honesty: `search` ranks graph nodes (functions, types, files,
+  modules). It is not full-text search of comments or string literals.
+</Callout>
+
+## Paged JSON envelope
+
+JSONL-emitting tools parse the binary's JSONL into a JSON envelope:
+
+```json
+{
+  "tool": "domains",
+  "extractor": "domains",
+  "repo_path": "/abs/path",
+  "total_records": 24,
+  "offset": 0,
+  "returned": 24,
+  "truncated": false,
+  "next_offset": null,
+  "records": [ { "record": "node", "id": "…", "kind": "…", "properties": {} } ]
+}
+```
+
+Default `limit` is **2,000 records**; `limit: 0` means unlimited (documented
+as dangerous — a 20k-node graph would flood context). `truncated: true` plus
+`next_offset` tell the agent exactly how to page, and extractor output order
+is byte-deterministic, so paging is stable across calls.
+
+## Structured errors
+
+All failures are JSON-RPC error objects with a machine-parseable `data.type`
+and an actionable `data.hint`:
+
+| Code | `data.type` | When |
+|---|---|---|
+| -32602 | `UNKNOWN_TOOL` | bad tool name (hint carries the tool list) |
+| -32602 | `MISSING_REPO_PATH` | no `repo_path` |
+| -32602 | `PLACEHOLDER_PATH` | `/path/to/…`, `YOUR_*`, `<…>` caught before the binary runs |
+| -32602 | `REPO_PATH_NOT_FOUND` | directory doesn't exist (hint carries resolved path + cwd) |
+| -32602 | `INVALID_PAGING` | bad `limit`/`offset` |
+| -32000 | `BINARY_MISSING` | no trailtracker binary (hint carries searched paths + build command) |
+| -32001 | `ANALYSIS_FAILED` | binary exit ≠ 0 (hint carries argv + full stderr) |
+| -32002 | `TIMEOUT` | over `TRAILTRACKER_TIMEOUT_SECS` |
+| -32003 | `OUTPUT_UNPARSEABLE` | binary emitted a non-JSON line (flagged as a TrailTracker bug) |
+
+Mistakes are forgiven where possible: string digits are coerced for
+`limit`/`offset`, and relative paths resolve while the error text educates
+about absolute paths.
+
+## Testing
+
+`mcp/test_mcp.py` is an end-to-end suite: it spawns the real server and drives
+the real binary against a vendored corpus — 129/129 green, no mocks. Smoke-test
+without Claude Code:
+
+```bash
+printf '%s\n%s\n%s\n' \
+  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}}' \
+  '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+  '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"brief","arguments":{"repo_path":"'"$PWD"'/eval/corpus/calc"}}}' \
+  | python3 mcp/trailtracker_mcp.py
+```
+
+## Agents without MCP
+
+The CLI is agent-first on its own: `trailtracker capabilities` returns the
+full machine-readable contract (commands, schemas, exit codes), every command
+takes `--json`, stdout carries data only, and errors come with `fix:` lines.
+An agent that can run shell commands needs nothing else — see the
+[CLI Reference](/cli-reference).

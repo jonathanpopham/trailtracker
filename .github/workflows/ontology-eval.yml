@@ -1,0 +1,46 @@
+name: ontology-eval
+
+# Deterministic, no-LLM, no-secrets quality gate: runs the ontology extractors
+# across the pinned real-codebase cohort and fails if any view regresses
+# (domain collapse/shatter, inert layers). See docs/ontology-roadmap.md.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/extract/**"
+      - "src/brief*.rs"
+      - "src/ir/ontology.rs"
+      - "benchmarks/**"
+      - ".github/workflows/ontology-eval.yml"
+  pull_request:
+    paths:
+      - "src/extract/**"
+      - "src/brief*.rs"
+      - "src/ir/ontology.rs"
+      - "benchmarks/**"
+  workflow_dispatch: {}
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build trailtracker (release)
+        run: cargo build --release --quiet
+
+      - name: Cache cohort (pinned commits)
+        uses: actions/cache@v4
+        with:
+          path: benchmarks/.cohort
+          key: cohort-${{ hashFiles('benchmarks/cohort.json') }}
+
+      - name: Fetch cohort
+        run: bash benchmarks/fetch_cohort.sh
+
+      - name: Ontology gate
+        env:
+          TT_BIN: ${{ github.workspace }}/target/release/trailtracker
+          COHORT_DIR: ${{ github.workspace }}/benchmarks/.cohort
+        run: python3 benchmarks/ontology_bench.py --check

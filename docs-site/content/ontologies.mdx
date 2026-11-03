@@ -1,0 +1,188 @@
+---
+title: The Seven Ontologies
+description: Structural, data, workflow, lexicon, archetype, layer, and domain — the layered understanding stack, each tier with real output.
+---
+
+import { Callout } from 'nextra/components'
+
+# The Seven Ontologies
+
+TrailTracker's understanding stack is layered: each tier is a spec plus an
+extractor that emits a graph loadable by
+[Ontoloom](https://github.com/jonathanpopham/ontoloom), TrailTracker's sibling
+graph editor. Extractors are pure functions of the base graph — they never
+read the source or the CST — and the same base graph always linearizes to
+byte-identical JSONL.
+
+| # | Ontology | Extractor | One line |
+|---|----------|-----------|----------|
+| 1 | **Structural** | base graph (`trailtracker graph`) | What exists and how it connects. |
+| 2 | **Data** | `extract data-ontology` | The entity model recovered from code. |
+| 3 | **Workflow** | `extract workflow-spec` | End-to-end flows as ordered steps. |
+| 4 | **Lexicon** | `extract lexicon` | The codebase's vocabulary — the keystone. |
+| 5 | **Archetype** | `extract archetypes` | What kind of thing each symbol is. |
+| 6 | **Layer** | `extract layers` | Domain/Application/Infrastructure/Presentation, with violation flags. |
+| 7 | **Domain** | `extract domains` | The capstone: bounded contexts. |
+
+Every snippet below is real output from running the extractors on
+TrailTracker's own repository (which vendors Salesforce fixtures — that's why
+Apex flows and sObjects appear alongside Rust).
+
+## 1. Structural — the base graph
+
+Files, modules, functions, types, and constants as nodes; containment,
+declaration, call, import, and type-use edges between them. This is not an
+extractor — it *is* the canonical graph the other six derive from.
+
+```json filename="trailtracker graph ."
+{"id":"fn::crate::extract::domains::assign_domains#398","kind":"Function","name":"assign_domains","properties":{"has_body":true,"language":"rust","line":398,"qualified_name":"crate::extract::domains::assign_domains","span_end":27941,"span_start":15465},"record":"node"}
+{"from":"fn::crate::brief::Model::build#287","kind":"CALLS","properties":{"callee":"parent_relation","candidate_count":1,"method":false,"resolution":"import","resolved":true},"record":"edge","to":"fn::crate::ir::ontology::parent_relation#106"}
+```
+
+Every `CALLS` edge carries its resolution provenance. Resolution walks a
+deterministic scope ladder — receiver → local → qualified → import → global —
+and the first level with candidates decides. One candidate is `resolved`
+(as above, at the `import` level); several is `ambiguous`, with the full
+candidate set preserved:
+
+```json filename="an ambiguous call — 66 candidates, none guessed"
+{"from":"fn::crate::analyze#314","kind":"CALLS","properties":{"ambiguous":true,"callee":"new","candidate_count":66,"candidates":["fn::crate::core::cst::Node::new#44","fn::crate::core::span::ByteSpan::new#43","fn::crate::graph::Graph::new#42","…"],"resolution":"global","resolved":false},"record":"edge","to":"unresolved::new"}
+```
+
+<Callout type="info">
+  A bare `new()` call in Rust legitimately matches 66 constructors. A model
+  would pick one; TrailTracker reports all 66 and says why. That is the
+  difference between auditable and plausible.
+</Callout>
+
+## 2. Data — the entity model
+
+Entities, attributes, and relationships recovered from code: types that look
+like data, the fields they declare, the references between them. On Salesforce
+metadata it recovers sObjects, fields, and profile references directly:
+
+```json filename="trailtracker extract data-ontology ."
+{"id":"sobject::Booking__c","kind":"Type","name":"Booking__c","properties":{"label":"Booking","language":"salesforce-metadata","type_kind":"sobject","view":"data_ontology"},"record":"node"}
+{"from":"sobject::Booking__c","kind":"DECLARES","properties":{},"record":"edge","to":"sobject_field::Booking__c.Activity_Level__c"}
+{"from":"profile::Care_Admin","kind":"USES_TYPE","properties":{"via":"reference"},"record":"edge","to":"sobject::Case__c"}
+```
+
+## 3. Workflow — behavior alongside structure
+
+End-to-end flows recovered as ordered steps, so the system's behavior is
+visible next to its structure. Each flow node carries a human-readable
+markdown rendering of the steps, their kinds, and their data dependencies:
+
+```json filename="trailtracker extract workflow-spec ."
+{"id":"workflow_spec::Create_Booking","kind":"Function","name":"Create_Booking","properties":{"depth":4,"label":"Create Booking","markdown":"Flow Create_Booking (depth 4)\n 1. start [start]\n 2. Create_Booking_Record [recordCreates] — write…","view":"workflow_spec"},"record":"node"}
+```
+
+Workflow recovery is deepest on Salesforce flows today (that was its first
+target); `rebuild-brief` builds a self-contained markdown rebuild brief for a
+single flow on top of this view.
+
+## 4. Lexicon — the keystone
+
+Every identifier in the codebase is split into tokens, ranked by frequency,
+and classified: **role** tokens name what something *is* (`service`,
+`handler`, `aggregate`), **concept** tokens name what it is *about* (`order`,
+`basket` — or, on this repo, `parse` and `call`), and **generic** tokens are
+noise (`abstract`, `init`, `mut`).
+
+```json filename="trailtracker extract lexicon ."
+{"id":"token::aggregate","kind":"Constant","name":"aggregate","properties":{"count":6,"token":"aggregate","token_class":"role","view":"lexicon"},"record":"node"}
+{"id":"token::parse","kind":"Constant","name":"parse","properties":{"count":477,"token":"parse","token_class":"concept","view":"lexicon"},"record":"node"}
+{"id":"token::abstract","kind":"Constant","name":"abstract","properties":{"count":4,"token":"abstract","token_class":"generic","view":"lexicon"},"record":"node"}
+```
+
+The tiers above build on this: role tokens drive archetypes, concept tokens
+label domains (since domains-v3, membership itself is structural — see tier 7).
+In the cross-language benchmark the lexicon was the view that
+generalized first — it nailed jellyfin's vocabulary (`media, library, stream,
+audio, video, image, user, channel`) with zero tuning.
+
+## 5. Archetype — what kind of thing each symbol is
+
+An ordered rule table over structural signals and naming conventions assigns
+each symbol an archetype: Controller, Repository, Entity, DTO, Test,
+Constructor, Accessor, and so on. Rules are tiered — location signals, then
+language-scoped rules (Python/Go/Rust idioms), then generic name conventions,
+then method-role rules dead last.
+
+The archetype census for TrailTracker's own repo:
+
+```text filename="trailtracker extract archetypes .  (summary nodes)"
+Accessor (386) · Client (1) · Configuration (1) · Constructor (133) · Dto (1)
+Enum (129) · EventHandler (219) · Exception (1) · Interface (4)
+MutationMethod (6) · QueryMethod (57) · Service (1) · Test (2293)
+Unclassified (5835)
+```
+
+<Callout type="warning">
+  `Unclassified` is a real category, not a failure to hide. Genuinely generic
+  functions (`render`, `flush`, `resolve`, …) stay Unclassified by design, and
+  coverage is honestly language-dependent: strongest on C#/Java conventions,
+  extended with language-scoped rules for Python/Go/Rust (django went from
+  13.9% to 76.3% classified). See [the benchmark](/benchmark).
+</Callout>
+
+## 6. Layer — architecture with violation flags
+
+Domain / Application / Infrastructure / Presentation per unit, inferred from
+each unit's **archetype mix** (Controller→Presentation,
+Repository→Infrastructure, Aggregate/Entity→Domain, Handler/Service→
+Application), with naming conventions kept only as a tie-breaker. Cross-layer
+dependencies that point the wrong way are flagged:
+
+```json filename="trailtracker extract layers ."
+{"from":"layer::Application","kind":"DEPENDS_ON","properties":{"count":96,"violation":false},"record":"edge","to":"layer::Domain"}
+{"from":"layer::Application","kind":"DEPENDS_ON","properties":{"count":13,"violation":true},"record":"edge","to":"layer::Presentation"}
+```
+
+On the benchmark cohort this surfaces real architectural findings: jellyfin
+carries 244 Domain→Infrastructure violations, bitwarden-server 487
+Application→Infrastructure. Earlier versions keyed layers off DDD naming and
+reported zero violations everywhere — a silent no-op the benchmark caught.
+
+## 7. Domain — the capstone
+
+Bounded contexts as dependency communities: deterministic hierarchical
+**structural** clustering (greedy modularity over dependency mass, exact
+integer arithmetic, sorted tie-breaks). Membership never reads symbol names —
+rename-invariance holds by construction — and each cluster is labeled by its
+dominant path segment, with the concept token only as a tie-break.
+
+```json filename="trailtracker extract domains ."
+{"id":"domain::lang","kind":"Module","name":"lang","properties":{"confidence":"medium","domain":"lang","file_count":134,"kind":"business","label":"lang","symbol_count":5765,"unit_count":33,"view":"domains"},"record":"node"}
+{"id":"domain::Shared/Platform","kind":"Module","name":"Shared/Platform","properties":{"confidence":"low","domain":"Shared/Platform","file_count":61,"kind":"business","label":"platform","symbol_count":994,"unit_count":10,"view":"domains"},"record":"node"}
+```
+
+The domain count is a natural stopping rule made of symbol-mass ratios, not a
+fixed cap, so counts vary with the repo (10 on eShop, 13 on jellyfin, 4 on
+nest). Labels are honest structural names (eShop → Ordering, Catalog.API,
+Identity.API). The shipped binary contains no network-capable or
+model-invoking code paths; an optional attested LLM naming pass exists only
+as a separate opt-in build (`cargo build --features enrich` — internal
+tooling, never shipped), with model id + prompt hash recorded and
+membership untouched. The vocabulary-vs-responsibility failure of the first
+algorithm, and the v3 redesign that replaced it, are on
+[the benchmark page](/benchmark#vocabulary-vs-responsibility-the-domains-v3-story).
+
+## Stitching it together: `extract hierarchy`
+
+`hierarchy` folds the stack into a single Domain→Unit→File→Symbol tree, every
+node carrying its domain, unit, layer, and archetype — one graph with all
+seven views' labels on it:
+
+```json filename="trailtracker extract hierarchy ."
+{"id":"flow::Create_Booking","kind":"Function","name":"Create_Booking","properties":{"archetype":"Constructor","domain":"Shared/Platform","file":"benchmarks/fixtures/coral/flows/Create_Booking.flow-meta.xml","level":"symbol","symbol_kind":"Function","unit":"benchmarks","view":"hierarchy"},"record":"node"}
+```
+
+It is the default view for `export ontoloom`, and the single source of truth
+for graph UIs that lazily expand a codebase.
+
+## Where next
+
+- [Quickstart](/quickstart) — run the extractors yourself.
+- [The Benchmark](/benchmark) — how these views are kept honest.
+- [Agents & MCP](/agents-mcp) — each view as a live agent tool.

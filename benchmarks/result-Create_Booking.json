@@ -1,0 +1,106 @@
+{
+ "flow": "Create_Booking",
+ "baseline": {
+  "arm": "baseline",
+  "num_turns": 3,
+  "cost_usd": 0.305,
+  "ops": {
+   "objects": [
+    "Booking__c"
+   ],
+   "mutations": [
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Contact__c",
+      "Number_of_Guests__c",
+      "Session__c"
+     ]
+    }
+   ],
+   "queries": [
+    {
+     "object": "Booking__c",
+     "fields": [
+      "Id",
+      "Experience_Name__c",
+      "Date__c"
+     ]
+    }
+   ],
+   "calls": [],
+   "inputs": [
+    "contactId",
+    "numberOfGuests",
+    "sessionId"
+   ],
+   "outputs": [
+    "createdBooking"
+   ]
+  },
+  "found_operations_block": true,
+  "score": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "tp": 13,
+   "predicted": 13,
+   "gold": 13,
+   "missed": [],
+   "hallucinated": []
+  }
+ },
+ "treatment": {
+  "arm": "treatment",
+  "num_turns": 4,
+  "cost_usd": 0.323,
+  "ops": {
+   "objects": [
+    "Booking__c"
+   ],
+   "mutations": [
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Contact__c",
+      "Number_of_Guests__c",
+      "Session__c"
+     ]
+    }
+   ],
+   "queries": [
+    {
+     "object": "Booking__c",
+     "fields": [
+      "Id",
+      "Experience_Name__c",
+      "Date__c"
+     ]
+    }
+   ],
+   "calls": [],
+   "inputs": [
+    "contactId",
+    "numberOfGuests",
+    "sessionId"
+   ],
+   "outputs": [
+    "createdBooking"
+   ]
+  },
+  "found_operations_block": true,
+  "score": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "tp": 13,
+   "predicted": 13,
+   "gold": 13,
+   "missed": [],
+   "hallucinated": []
+  }
+ },
+ "delta_f1": 0.0
+}

@@ -1,0 +1,805 @@
+[
+ {
+  "repo": "eShop",
+  "split": "dev",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 10,
+   "top_share": 0.44,
+   "junk": 0,
+   "top5": [
+    [
+     "ClientApp",
+     "ClientApp",
+     0.44
+    ],
+    [
+     "Ordering",
+     "Ordering",
+     0.24
+    ],
+    [
+     "Catalog.API",
+     "Catalog.API",
+     0.08
+    ],
+    [
+     "WebApp",
+     "WebApp",
+     0.07
+    ],
+    [
+     "Identity.API",
+     "Identity.API",
+     0.06
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 1037,
+   "unclassified": 590
+  },
+  "lexicon": {
+   "top": [
+    "order",
+    "catalog",
+    "basket",
+    "integration",
+    "item",
+    "buyer",
+    "stock",
+    "domain"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 10,
+    "Domain": 5,
+    "Infrastructure": 3,
+    "Presentation": 3,
+    "Shared": 2,
+    "Test": 1
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Infrastructure",
+    "Presentation"
+   ],
+   "violations": 2
+  },
+  "semantic": {
+   "macro_f1": 0.923,
+   "per_domain": [
+    {
+     "gt_domain": "Ordering",
+     "matched": "Ordering",
+     "gt_files": 105,
+     "coverage": 1.0,
+     "purity": 1.0,
+     "f1": 1.0
+    },
+    {
+     "gt_domain": "Basket",
+     "matched": "Basket.API",
+     "gt_files": 11,
+     "coverage": 1.0,
+     "purity": 1.0,
+     "f1": 1.0
+    },
+    {
+     "gt_domain": "Catalog",
+     "matched": "Catalog.API",
+     "gt_files": 32,
+     "coverage": 1.0,
+     "purity": 0.889,
+     "f1": 0.941
+    },
+    {
+     "gt_domain": "Identity",
+     "matched": "Identity.API",
+     "gt_files": 65,
+     "coverage": 1.0,
+     "purity": 1.0,
+     "f1": 1.0
+    },
+    {
+     "gt_domain": "Webhooks",
+     "matched": "WebhookClient",
+     "gt_files": 37,
+     "coverage": 1.0,
+     "purity": 1.0,
+     "f1": 1.0
+    },
+    {
+     "gt_domain": "WebAppsClients",
+     "matched": "ClientApp",
+     "gt_files": 183,
+     "coverage": 0.743,
+     "purity": 1.0,
+     "f1": 0.853
+    },
+    {
+     "gt_domain": "Platform",
+     "matched": "Shared/Platform",
+     "gt_files": 29,
+     "coverage": 0.552,
+     "purity": 0.842,
+     "f1": 0.667
+    }
+   ]
+  }
+ },
+ {
+  "repo": "nopCommerce",
+  "split": "dev",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 3,
+   "top_share": 0.41,
+   "junk": 0,
+   "top5": [
+    [
+     "Presentation",
+     "Presentation",
+     0.41
+    ],
+    [
+     "Libraries",
+     "Libraries",
+     0.38
+    ],
+    [
+     "Plugins",
+     "Plugins",
+     0.21
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 8836,
+   "unclassified": 7497
+  },
+  "lexicon": {
+   "top": [
+    "product",
+    "customer",
+    "prepare",
+    "order",
+    "search",
+    "settings",
+    "cache",
+    "address"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Domain": 1,
+    "Presentation": 3,
+    "Shared": 1,
+    "Test": 1
+   },
+   "core": [
+    "Domain",
+    "Presentation"
+   ],
+   "violations": 1
+  }
+ },
+ {
+  "repo": "bitwarden-server",
+  "split": "dev",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 12,
+   "top_share": 0.44,
+   "junk": 0,
+   "top5": [
+    [
+     "Core",
+     "Core",
+     0.44
+    ],
+    [
+     "Api",
+     "Api",
+     0.26
+    ],
+    [
+     "util",
+     "util",
+     0.08
+    ],
+    [
+     "bitwarden_license",
+     "bitwarden_license",
+     0.07
+    ],
+    [
+     "Infrastructure.EntityFramework",
+     "Infrastructure.EntityFramework",
+     0.04
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 19986,
+   "unclassified": 6411
+  },
+  "lexicon": {
+   "top": [
+    "organization",
+    "user",
+    "access",
+    "password",
+    "send",
+    "email",
+    "validate",
+    "policy"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 7,
+    "Domain": 1,
+    "Infrastructure": 2,
+    "Presentation": 7,
+    "Shared": 1,
+    "Test": 2
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Infrastructure",
+    "Presentation"
+   ],
+   "violations": 3
+  }
+ },
+ {
+  "repo": "nest",
+  "split": "dev",
+  "tier": "gate",
+  "lang": "typescript",
+  "domains": {
+   "n": 4,
+   "top_share": 0.48,
+   "junk": 0,
+   "top5": [
+    [
+     "core",
+     "core",
+     0.48
+    ],
+    [
+     "microservices",
+     "microservices",
+     0.21
+    ],
+    [
+     "integration",
+     "integration",
+     0.19
+    ],
+    [
+     "sample",
+     "sample",
+     0.12
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 2210,
+   "unclassified": 2882
+  },
+  "lexicon": {
+   "top": [
+    "spec",
+    "app",
+    "metadata",
+    "message",
+    "error",
+    "decorator",
+    "find",
+    "register"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 3,
+    "Presentation": 1,
+    "Shared": 3
+   },
+   "core": [
+    "Application",
+    "Presentation"
+   ],
+   "violations": 1
+  }
+ },
+ {
+  "repo": "jellyfin",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 13,
+   "top_share": 0.32,
+   "junk": 0,
+   "top5": [
+    [
+     "MediaBrowser.Controller",
+     "MediaBrowser.Controller",
+     0.32
+    ],
+    [
+     "MediaBrowser.Model",
+     "MediaBrowser.Model",
+     0.15
+    ],
+    [
+     "Jellyfin.Api",
+     "Jellyfin.Api",
+     0.13
+    ],
+    [
+     "MediaBrowser.Providers",
+     "MediaBrowser.Providers",
+     0.11
+    ],
+    [
+     "Jellyfin",
+     "Jellyfin",
+     0.1
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 6567,
+   "unclassified": 3639
+  },
+  "lexicon": {
+   "top": [
+    "item",
+    "image",
+    "user",
+    "media",
+    "path",
+    "metadata",
+    "file",
+    "stream"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 11,
+    "Domain": 3,
+    "Infrastructure": 2,
+    "Presentation": 7,
+    "Shared": 2,
+    "Test": 1
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Infrastructure",
+    "Presentation"
+   ],
+   "violations": 5
+  }
+ },
+ {
+  "repo": "OrchardCore",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 6,
+   "top_share": 0.37,
+   "junk": 0,
+   "top5": [
+    [
+     "OrchardCore.Modules",
+     "OrchardCore.Modules",
+     0.37
+    ],
+    [
+     "OrchardCore",
+     "OrchardCore",
+     0.28
+    ],
+    [
+     "OrchardCore/OrchardCore.Abstractions",
+     "OrchardCore/OrchardCore.Abstractions",
+     0.2
+    ],
+    [
+     "OrchardCore/OrchardCore.Media",
+     "OrchardCore/OrchardCore.Media",
+     0.08
+    ],
+    [
+     "OrchardCore.Tests",
+     "OrchardCore.Tests",
+     0.04
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 12139,
+   "unclassified": 14520
+  },
+  "lexicon": {
+   "top": [
+    "content",
+    "display",
+    "settings",
+    "part",
+    "driver",
+    "field",
+    "admin",
+    "deployment"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 45,
+    "Domain": 9,
+    "Infrastructure": 1,
+    "Presentation": 37,
+    "Shared": 11,
+    "Test": 1
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Infrastructure",
+    "Presentation"
+   ],
+   "violations": 4
+  }
+ },
+ {
+  "repo": "Radarr",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "csharp",
+  "domains": {
+   "n": 10,
+   "top_share": 0.48,
+   "junk": 0,
+   "top5": [
+    [
+     "NzbDrone.Core",
+     "NzbDrone.Core",
+     0.48
+    ],
+    [
+     "NzbDrone.Core.Test",
+     "NzbDrone.Core.Test",
+     0.15
+    ],
+    [
+     "frontend",
+     "frontend",
+     0.14
+    ],
+    [
+     "NzbDrone.Common",
+     "NzbDrone.Common",
+     0.07
+    ],
+    [
+     "Radarr.Api.V3",
+     "Radarr.Api.V3",
+     0.06
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 11029,
+   "unclassified": 6114
+  },
+  "lexicon": {
+   "top": [
+    "movie",
+    "should",
+    "css",
+    "download",
+    "file",
+    "fixture",
+    "import",
+    "modal"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 5,
+    "Domain": 1,
+    "Presentation": 5,
+    "Shared": 4,
+    "Test": 12
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Presentation"
+   ],
+   "violations": 2
+  }
+ },
+ {
+  "repo": "django",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "python",
+  "domains": {
+   "n": 14,
+   "top_share": 0.49,
+   "junk": 0,
+   "top5": [
+    [
+     "django",
+     "django",
+     0.49
+    ],
+    [
+     "django/db",
+     "django/db",
+     0.41
+    ],
+    [
+     "forms_tests",
+     "forms_tests",
+     0.03
+    ],
+    [
+     "gis_tests",
+     "gis_tests",
+     0.01
+    ],
+    [
+     "i18n",
+     "i18n",
+     0.01
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 35601,
+   "unclassified": 7854
+  },
+  "lexicon": {
+   "top": [
+    "field",
+    "meta",
+    "form",
+    "admin",
+    "custom",
+    "format",
+    "check",
+    "up"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 4,
+    "Domain": 5,
+    "Infrastructure": 1,
+    "Presentation": 7,
+    "Shared": 1,
+    "Test": 4
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Infrastructure",
+    "Presentation"
+   ],
+   "violations": 6
+  }
+ },
+ {
+  "repo": "hugo",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "go",
+  "domains": {
+   "n": 10,
+   "top_share": 0.27,
+   "junk": 0,
+   "top5": [
+    [
+     "hugolib",
+     "hugolib",
+     0.27
+    ],
+    [
+     "tpl",
+     "tpl",
+     0.19
+    ],
+    [
+     "resources",
+     "resources",
+     0.15
+    ],
+    [
+     "Shared/Platform",
+     "platform",
+     0.11
+    ],
+    [
+     "common",
+     "common",
+     0.1
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 4565,
+   "unclassified": 5073
+  },
+  "lexicon": {
+   "top": [
+    "page",
+    "content",
+    "file",
+    "json",
+    "path",
+    "template",
+    "render",
+    "benchmark"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 23,
+    "Domain": 2,
+    "Presentation": 8,
+    "Shared": 5
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Presentation"
+   ],
+   "violations": 2
+  }
+ },
+ {
+  "repo": "dubbo",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "java",
+  "domains": {
+   "n": 11,
+   "top_share": 0.25,
+   "junk": 0,
+   "top5": [
+    [
+     "dubbo",
+     "dubbo",
+     0.25
+    ],
+    [
+     "dubbo/dubbo-config-api",
+     "dubbo/dubbo-config-api",
+     0.19
+    ],
+    [
+     "dubbo-common",
+     "dubbo-common",
+     0.19
+    ],
+    [
+     "dubbo/dubbo-remoting-http12",
+     "dubbo/dubbo-remoting-http12",
+     0.15
+    ],
+    [
+     "dubbo-rpc",
+     "dubbo-rpc",
+     0.08
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 24224,
+   "unclassified": 11480
+  },
+  "lexicon": {
+   "top": [
+    "method",
+    "url",
+    "registry",
+    "dubbo",
+    "metadata",
+    "parameter",
+    "protocol",
+    "application"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 12,
+    "Domain": 1,
+    "Presentation": 1,
+    "Shared": 1,
+    "Test": 2
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Presentation"
+   ],
+   "violations": 2
+  }
+ },
+ {
+  "repo": "alacritty",
+  "split": "holdout",
+  "tier": "gate",
+  "lang": "rust",
+  "domains": {
+   "n": 4,
+   "top_share": 0.41,
+   "junk": 0,
+   "top5": [
+    [
+     "alacritty",
+     "alacritty",
+     0.41
+    ],
+    [
+     "alacritty_terminal",
+     "alacritty_terminal",
+     0.36
+    ],
+    [
+     "alacritty/input",
+     "alacritty/input",
+     0.22
+    ],
+    [
+     "alacritty_config_derive",
+     "alacritty_config_derive",
+     0.01
+    ]
+   ]
+  },
+  "archetypes": {
+   "classified": 604,
+   "unclassified": 1190
+  },
+  "lexicon": {
+   "top": [
+    "search",
+    "cursor",
+    "lines",
+    "line",
+    "mode",
+    "selection",
+    "mouse",
+    "size"
+   ]
+  },
+  "layers": {
+   "dist": {
+    "Application": 1,
+    "Domain": 6,
+    "Presentation": 4,
+    "Shared": 2
+   },
+   "core": [
+    "Application",
+    "Domain",
+    "Presentation"
+   ],
+   "violations": 2
+  }
+ }
+]

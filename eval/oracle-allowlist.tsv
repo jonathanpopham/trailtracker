@@ -1,0 +1,5 @@
+# Allowlisted oracle diffs — genuine parser-vs-parser differences, NOT bugs.
+# Format (tab-separated): lang<TAB>file<TAB>kind<TAB>name<TAB>reason
+# Matched line-agnostically on (file, kind, name). Every entry must have a reason.
+#
+python	tests/test_runner_apps/tagged/tests_syntax_error.py	type	SyntaxErrorTestCase	ast cannot parse a file containing a deliberate syntax error; TrailTracker's error-tolerant lossless parser still extracts the class. Feature, not bug.

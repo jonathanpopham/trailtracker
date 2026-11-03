@@ -1,0 +1,39 @@
+name: salesforce-eval (tier 1)
+
+# Deterministic extraction-quality gate. Runs whenever the Salesforce/Apex
+# extraction or the rebuild artifact changes: does TrailTracker's own
+# operation-set still match the hand-labeled ground truth (F1 >= 0.95)?
+# No LLM, no secrets — cheap, fast, every relevant change.
+# (Tier 2, the LLM uplift eval, runs on release tags once an API key is
+#  provisioned — see benchmarks/runner.py + docs/evals/rebuild-eval-design.md.)
+
+on:
+  push:
+    paths:
+      - "src/lang/salesforce/**"
+      - "src/lang/apex/**"
+      - "src/lang/xml/**"
+      - "src/pipeline/linker.rs"
+      - "src/report_brief.rs"
+      - "src/extract/**"
+      - "benchmarks/**"
+  pull_request:
+    paths:
+      - "src/lang/salesforce/**"
+      - "src/lang/apex/**"
+      - "src/lang/xml/**"
+      - "src/pipeline/linker.rs"
+      - "src/report_brief.rs"
+      - "src/extract/**"
+      - "benchmarks/**"
+
+jobs:
+  tier1-extraction-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build release binary
+        run: cargo build --release --quiet
+      - name: Tier-1 extraction gate (F1 >= 0.95 vs hand-labeled ground truth)
+        run: python3 benchmarks/tier1_gate.py

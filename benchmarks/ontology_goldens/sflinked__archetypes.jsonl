@@ -1,0 +1,13 @@
+{"id":"archetype::Unclassified","kind":"Type","name":"Unclassified","properties":{"archetype":"Unclassified","count":6,"view":"archetypes"},"record":"node"}
+{"id":"flow::ContactIntake","kind":"Function","name":"ContactIntake","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"flow","view":"archetypes"},"record":"node"}
+{"id":"flow_element::ContactIntake.Verify","kind":"Function","name":"Verify","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"flow_element","view":"archetypes"},"record":"node"}
+{"id":"flow_element::ContactIntake.start","kind":"Function","name":"start","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"flow_element","view":"archetypes"},"record":"node"}
+{"id":"fn::ContactVerifier.verifyContact#4","kind":"Function","name":"verifyContact","properties":{"archetype":"Unclassified","language":"apex","view":"archetypes"},"record":"node"}
+{"id":"sobject::Contact","kind":"Type","name":"Contact","properties":{"archetype":"Unclassified","language":"salesforce-metadata","type_kind":"sobject","view":"archetypes"},"record":"node"}
+{"id":"type::ContactVerifier","kind":"Type","name":"ContactVerifier","properties":{"archetype":"Unclassified","language":"apex","type_kind":"class","view":"archetypes"},"record":"node"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"flow::ContactIntake"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"flow_element::ContactIntake.Verify"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"flow_element::ContactIntake.start"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"fn::ContactVerifier.verifyContact#4"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"sobject::Contact"}
+{"from":"archetype::Unclassified","kind":"CONTAINS","properties":{},"record":"edge","to":"type::ContactVerifier"}

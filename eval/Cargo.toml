@@ -1,0 +1,34 @@
+# Development / CI verification harness. NOT shipped. Path-depends on the
+# runtime crate. Intentionally std-only too, so CI stays hermetic — but it is
+# not bound by the airgap dependency policy and may take dev tooling if needed.
+[package]
+name = "trailtracker-eval"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+trailtracker = { path = ".." }
+
+[lib]
+name = "trailtracker_eval"
+path = "src/lib.rs"
+
+[[bin]]
+name = "verify"
+path = "src/verify.rs"
+
+[[bin]]
+name = "regress"
+path = "src/bin/regress.rs"
+
+[[bin]]
+name = "oracle"
+path = "src/bin/oracle.rs"
+
+[lints.rust]
+# `kani` cfg is set only by the Kani model checker; register it so normal builds
+# don't warn (and CI's `-D warnings` stays clean).
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }
+# Match the runtime crate's memory-safety guarantee across every eval target.
+unsafe_code = "forbid"

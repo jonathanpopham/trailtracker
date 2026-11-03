@@ -1,0 +1,344 @@
+{
+ "flow": "Mega_Intake_Orchestrator",
+ "baseline": {
+  "arm": "baseline",
+  "num_turns": 3,
+  "cost_usd": 0.864,
+  "ops": {
+   "objects": [
+    "Contact",
+    "Case",
+    "Booking__c"
+   ],
+   "mutations": [
+    {
+     "op": "update",
+     "object": "Booking__c",
+     "fields": [
+      "Status__c"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Contact",
+     "fields": [
+      "MailingCity",
+      "Email"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Case",
+     "fields": [
+      "ContactId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "Status",
+      "Priority"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Contact",
+     "fields": [
+      "AccountId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "Status",
+      "OwnerId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Guests__c",
+      "Contact__c"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Case",
+     "fields": [
+      "Priority"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Guests__c",
+      "Status__c"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "ContactId",
+      "Priority"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Contact",
+     "fields": [
+      "MailingCity"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Contact",
+     "fields": [
+      "MailingCity",
+      "AccountId"
+     ]
+    }
+   ],
+   "queries": [
+    {
+     "object": "Contact",
+     "fields": [
+      "Id",
+      "Email"
+     ]
+    },
+    {
+     "object": "Case",
+     "fields": [
+      "Id",
+      "Status"
+     ]
+    },
+    {
+     "object": "Booking__c",
+     "fields": [
+      "Id",
+      "Contact__c"
+     ]
+    },
+    {
+     "object": "Case",
+     "fields": [
+      "Id",
+      "Priority"
+     ]
+    },
+    {
+     "object": "Contact",
+     "fields": [
+      "Id",
+      "AccountId"
+     ]
+    }
+   ],
+   "calls": [
+    "Handler_5",
+    "Handler_11",
+    "Handler_17",
+    "Handler_23",
+    "Handler_29",
+    "Handler_35",
+    "Handler_41"
+   ],
+   "inputs": [
+    "recordId",
+    "runMode",
+    "batchSize"
+   ],
+   "outputs": [
+    "resultCode"
+   ]
+  },
+  "found_operations_block": true,
+  "score": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "tp": 41,
+   "predicted": 41,
+   "gold": 41,
+   "missed": [],
+   "hallucinated": []
+  }
+ },
+ "treatment": {
+  "arm": "treatment",
+  "num_turns": 5,
+  "cost_usd": 1.434,
+  "ops": {
+   "objects": [
+    "Contact",
+    "Case",
+    "Booking__c"
+   ],
+   "mutations": [
+    {
+     "op": "update",
+     "object": "Booking__c",
+     "fields": [
+      "Status__c"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Contact",
+     "fields": [
+      "MailingCity",
+      "Email"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Case",
+     "fields": [
+      "ContactId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "Status",
+      "Priority"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Contact",
+     "fields": [
+      "AccountId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "Status",
+      "OwnerId"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Guests__c",
+      "Contact__c"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Case",
+     "fields": [
+      "Priority"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Booking__c",
+     "fields": [
+      "Guests__c",
+      "Status__c"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Case",
+     "fields": [
+      "ContactId",
+      "Priority"
+     ]
+    },
+    {
+     "op": "update",
+     "object": "Contact",
+     "fields": [
+      "MailingCity"
+     ]
+    },
+    {
+     "op": "create",
+     "object": "Contact",
+     "fields": [
+      "MailingCity",
+      "AccountId"
+     ]
+    }
+   ],
+   "queries": [
+    {
+     "object": "Contact",
+     "fields": [
+      "Id",
+      "Email"
+     ]
+    },
+    {
+     "object": "Case",
+     "fields": [
+      "Id",
+      "Status"
+     ]
+    },
+    {
+     "object": "Booking__c",
+     "fields": [
+      "Id",
+      "Contact__c"
+     ]
+    },
+    {
+     "object": "Case",
+     "fields": [
+      "Id",
+      "Priority"
+     ]
+    },
+    {
+     "object": "Contact",
+     "fields": [
+      "Id",
+      "AccountId"
+     ]
+    }
+   ],
+   "calls": [
+    "Handler_5",
+    "Handler_11",
+    "Handler_17",
+    "Handler_23",
+    "Handler_29",
+    "Handler_35",
+    "Handler_41"
+   ],
+   "inputs": [
+    "recordId",
+    "runMode",
+    "batchSize"
+   ],
+   "outputs": [
+    "resultCode"
+   ]
+  },
+  "found_operations_block": true,
+  "score": {
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "tp": 41,
+   "predicted": 41,
+   "gold": 41,
+   "missed": [],
+   "hallucinated": []
+  }
+ },
+ "delta_f1": 0.0
+}

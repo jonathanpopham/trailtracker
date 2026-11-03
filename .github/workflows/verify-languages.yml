@@ -1,0 +1,130 @@
+name: verify-languages
+
+# Ground-truth verification matrix: per language, diff TrailTracker's exact
+# definition set against an external parser on a real repo. Runs on GitHub's
+# runners so the measurement costs nothing locally. Tier A (canonical parser) jobs
+# gate to 0 unexplained diffs; Tier B (ctags) jobs are coarse and report-only.
+
+on:
+  push:
+    paths:
+      - 'eval/**'
+      - 'src/**'
+      - '.github/workflows/verify-languages.yml'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.gen.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: gen
+        name: Build matrix from corpus-manifest.tsv
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          inc = []
+          for ln in open("eval/corpus-manifest.tsv"):
+              ln = ln.rstrip("\n")
+              if not ln.strip() or ln.lstrip().startswith("#"):
+                  continue
+              p = ln.split("\t")
+              if len(p) < 4:
+                  continue
+              inc.append({
+                  "lang": p[0], "oracle": p[1], "tier": p[2],
+                  "repo": p[3], "ref": p[4] if len(p) > 4 else "",
+              })
+          print("matrix=" + json.dumps({"include": inc}))
+          PY
+
+  verify:
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable # rust-toolchain.toml pins the version
+      - uses: Swatinem/rust-cache@v2
+      - name: Install oracle parser
+        run: |
+          if [ "${{ matrix.oracle }}" = "ctags" ]; then
+            sudo apt-get update && sudo apt-get install -y universal-ctags
+          fi
+      - name: Set up Go (goparser oracle)
+        if: matrix.oracle == 'goparser'
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Set up Node (tsnode oracle)
+        if: matrix.oracle == 'tsnode'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build oracle
+        run: cargo build --release -p trailtracker-eval --bin oracle
+      - name: Clone corpus (${{ matrix.repo }})
+        run: |
+          if [ -n "${{ matrix.ref }}" ]; then
+            git clone --depth 1 --branch "${{ matrix.ref }}" "${{ matrix.repo }}" /tmp/corpus
+          else
+            git clone --depth 1 "${{ matrix.repo }}" /tmp/corpus
+          fi
+          echo "CORPUS_SHA=$(git -C /tmp/corpus rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "corpus ${{ matrix.repo }} @ $(git -C /tmp/corpus rev-parse HEAD)"
+      - name: Run oracle (${{ matrix.lang }} via ${{ matrix.oracle }})
+        run: |
+          # Tier A gates to 0-diff; Tier B (ctags) is coarse -> report-only.
+          if [ "${{ matrix.tier }}" = "A" ]; then
+            ./target/release/oracle --lang ${{ matrix.lang }} --repo /tmp/corpus \
+              --oracle ${{ matrix.oracle }} --allowlist eval/oracle-allowlist.tsv \
+              --out report-${{ matrix.lang }}.json
+          else
+            ./target/release/oracle --lang ${{ matrix.lang }} --repo /tmp/corpus \
+              --oracle ${{ matrix.oracle }} --allowlist eval/oracle-allowlist.tsv \
+              --out report-${{ matrix.lang }}.json || true
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.lang }}
+          path: report-${{ matrix.lang }}.json
+
+  aggregate:
+    needs: verify
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: reports
+          pattern: report-*
+          merge-multiple: true
+      - name: Coverage summary
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, glob
+          rows = []
+          for f in sorted(glob.glob("reports/report-*.json")):
+              try:
+                  rows.append(json.load(open(f)))
+              except Exception:
+                  pass
+          print("## Ground-truth coverage")
+          print("| lang | oracle | tt | truth | missed | extra | drops | clean |")
+          print("|---|---|--:|--:|--:|--:|--:|:--:|")
+          for d in rows:
+              print(f"| {d['lang']} | {d['oracle']} | {d['tt_total']} | {d['truth_total']} | "
+                    f"{d['missed_count']} | {d['extra_count']} | {len(d['whole_file_drops'])} | "
+                    f"{'✅' if d['clean'] else '❌'} |")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: reports/

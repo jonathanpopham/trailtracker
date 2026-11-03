@@ -1,0 +1,33 @@
+# Cross-language linkage fixture (F7 / TT-63).
+# A tiny GraphQL schema whose types/fields are (or are deliberately NOT)
+# implemented by same-named TypeScript symbols in ../src. The expected
+# IMPLEMENTED_BY edge set is hand-verified in ../../golden/gqllinked.jsonl.
+
+type Query {
+  # Root field WITH arguments -> a Function node. A lone same-named TS
+  # function `assertion` exists -> unambiguous field link.
+  assertion(id: Int!): Assertion
+}
+
+# Unambiguous type: one same-named TS `interface Assertion` -> type link.
+type Assertion {
+  id: Int!
+  event: Event
+}
+
+# Ambiguous type: TWO same-named TS `interface Event` (src/events/{a,b}.ts)
+# -> ambiguity preserved, NO edge, node flagged resolver_ambiguous.
+type Event {
+  id: Int!
+}
+
+# No matching TS symbol at all -> honest hole, no edge, no flag.
+type Ghost {
+  id: Int!
+}
+
+# Kind mismatch: a TS *function* `Widget` exists but no TS *type* -> no edge
+# (a field↔function / type↔type kind alignment guard).
+type Widget {
+  id: Int!
+}
