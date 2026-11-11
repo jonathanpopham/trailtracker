@@ -1,6 +1,11 @@
 TrailTracker's first experimental release: local code graphs, architecture
 summaries, and evidence for humans and coding agents.
 
+Version 0.1.1 fixes Python `__all__` export detection with Windows CRLF line
+endings. The 0.1.0 candidate failed its Windows test gate and was not published
+as a binary release. A regression test now covers literal, annotated, tuple,
+and multiline export lists with both LF and CRLF endings.
+
 - Get oriented with `brief`, inspect analysis coverage with `stats`, and query
   definitions, imports, calls, and a symbol's blast radius.
 - Explore seven derived architecture views, or generate an interactive HTML dossier.

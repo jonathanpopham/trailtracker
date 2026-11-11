@@ -1,0 +1,3 @@
+# Frozen corpus inputs and graph snapshots must retain the same bytes on every
+# build host. Runtime CRLF handling is exercised explicitly by regression tests.
+* text=auto eol=lf

@@ -1042,7 +1042,9 @@ fn literal_all_exports(root: &Node, src: &str) -> Option<BTreeSet<String>> {
         if els[eq_idx + 2..]
             .iter()
             .filter_map(tok_text)
-            .any(|text| text != "\n")
+            // The lossless lexer preserves LF, CRLF, and CR spellings. Each is
+            // a statement terminator, not a computed extension of __all__.
+            .any(|text| !matches!(text, "\n" | "\r\n" | "\r"))
         {
             return None;
         }
@@ -1752,6 +1754,30 @@ mod tests {
                 .find(|n| n.name == name)
                 .unwrap_or_else(|| panic!("missing {name}"));
             assert_eq!(node.props.get("exported"), None, "{name}");
+        }
+    }
+
+    #[test]
+    fn literal_all_exports_survive_windows_line_endings() {
+        for assignment in [
+            "__all__ = [\"_listed\"]",
+            "__all__ = (\"_listed\",)",
+            "__all__: list = [\"_listed\"] # explicit exports",
+            "__all__ = [\n    \"_listed\",\n]",
+        ] {
+            for newline in ["\n", "\r\n"] {
+                let source = format!("{assignment}\n_listed = 1\nUNLISTED_PUBLIC = 2\n")
+                    .replace('\n', newline);
+                let graph = graph_for(&source);
+                let listed = graph.nodes().find(|n| n.name == "_listed").unwrap();
+                let unlisted = graph.nodes().find(|n| n.name == "UNLISTED_PUBLIC").unwrap();
+                assert_eq!(
+                    listed.props.get("exported"),
+                    Some(&Json::Bool(true)),
+                    "{source:?}"
+                );
+                assert_eq!(unlisted.props.get("exported"), None, "{source:?}");
+            }
         }
     }
 
