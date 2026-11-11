@@ -4,11 +4,11 @@ version = 4
 
 [[package]]
 name = "trailtracker"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "trailtracker-eval"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "trailtracker",
 ]

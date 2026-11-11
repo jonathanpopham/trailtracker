@@ -3,7 +3,7 @@
 # not bound by the airgap dependency policy and may take dev tooling if needed.
 [package]
 name = "trailtracker-eval"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 publish = false
 

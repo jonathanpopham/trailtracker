@@ -8,13 +8,13 @@ graph and helps you find the code relevant to a task. The default Rust binary
 uses only the standard library: no external crates, model calls, or network
 services. `unsafe` is forbidden in the runtime crate.
 
-**Status: early release, v0.1.0.** Language depth varies. Graphs and derived
+**Status: early release, v0.1.1.** Language depth varies. Graphs and derived
 views are analysis aids, not a compiler's complete semantic model. Read the
 [limitations](#limitations) before relying on a finding.
 
 ## Build and try it
 
-Download a native archive from [the v0.1.0 release](https://github.com/jonathanpopham/trailtracker/releases/tag/v0.1.0),
+Download a native archive from [the v0.1.1 release](https://github.com/jonathanpopham/trailtracker/releases/tag/v0.1.1),
 or see [the project page](https://jonathanpopham.com/trailtracker/) for downloads
 by operating system and processor. Extract it and run `./trailtracker help`
 (`.\trailtracker.exe help` in PowerShell). Copy the binary to a directory on your
