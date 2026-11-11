@@ -60,7 +60,7 @@ def main():
 
     digest = hashlib.sha256(archive.read_bytes()).hexdigest()
     archive.with_name(archive.name + ".sha256").write_text(
-        f"{digest}  {archive.name}\n", encoding="utf-8",
+        f"{digest}  {archive.name}\n", encoding="utf-8", newline="\n",
     )
     print(f"Packaged and smoke-tested {archive}")
 

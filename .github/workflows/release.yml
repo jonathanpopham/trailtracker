@@ -113,7 +113,8 @@ jobs:
       - name: Assemble and verify checksums
         run: |
           cd dist
-          cat ./*.sha256 > SHA256SUMS.txt
+          # Accept artifacts from older Windows packagers that emitted CRLF.
+          cat ./*.sha256 | tr -d '\r' > SHA256SUMS.txt
           sha256sum verification-report.json >> SHA256SUMS.txt
           sha256sum --check SHA256SUMS.txt
       - name: Publish the complete release
