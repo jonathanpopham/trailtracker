@@ -1,4 +1,5 @@
 /target
+/dist/
 verification-report.json
 private
 benchmarks/.cohort/

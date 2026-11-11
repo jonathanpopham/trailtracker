@@ -14,6 +14,15 @@ views are analysis aids, not a compiler's complete semantic model. Read the
 
 ## Build and try it
 
+Download a native archive from [the v0.1.0 release](https://github.com/jonathanpopham/trailtracker/releases/tag/v0.1.0),
+or see [the project page](https://jonathanpopham.com/trailtracker/) for downloads
+by operating system and processor. Extract it and run `./trailtracker help`
+(`.\trailtracker.exe help` in PowerShell). Copy the binary to a directory on your
+`PATH` to use `trailtracker` from any directory. macOS binaries are unsigned.
+The release includes SHA-256 checksums; the MCP adapter is in the source tree.
+
+To build from source:
+
 Install Rust 1.90.0 or newer, then:
 
 ```sh
@@ -27,7 +36,7 @@ cargo build --release --locked
 ```
 
 With rustup, `rust-toolchain.toml` selects the project's pinned toolchain.
-There is no crates.io package or published binary release yet.
+There is no crates.io package.
 
 ## What you can do
 
@@ -147,4 +156,5 @@ the maintainer may independently implement fixes described in an issue.
 ## License
 
 Copyright (c) 2026 Jonathan Popham. All rights reserved.
-No license is granted in this preview; the public licensing choice is pending.
+No open-source license is granted. This release makes the source available for
+inspection under the existing all-rights-reserved terms.

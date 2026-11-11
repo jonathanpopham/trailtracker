@@ -1,46 +1,126 @@
 name: Release
 
-# CD: a version tag (`vX.Y.Z`) builds the portable std-only `trailtracker` CLI
-# natively on Linux, macOS, and Windows and attaches each binary to the GitHub
-# Release. (Phase 4 will also attach the per-build eval-state report.)
-
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to build (for example v0.1.0)
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
 
 env:
   CARGO_TERM_COLOR: always
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: dtolnay/rust-toolchain@1.90.0
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Check tag and package version
+        shell: bash
+        run: |
+          version=$(cargo metadata --no-deps --format-version 1 | python3 -c 'import json,sys; print(next(p["version"] for p in json.load(sys.stdin)["packages"] if p["name"] == "trailtracker"))')
+          test "$RELEASE_TAG" = "v$version"
+          test "$(git describe --tags --exact-match)" = "$RELEASE_TAG"
+      - name: Run the release gate
+        run: bash scripts/verify.sh
+      - name: Exercise the MCP adapter
+        run: python3 mcp/test_mcp.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verification-report
+          path: verification-report.json
+          if-no-files-found: error
+
   build:
-    name: build · ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - name: Build release binary
-        run: cargo build --release --bin trailtracker
-      - name: Package
-        shell: bash
-        run: |
-          if [ -f target/release/trailtracker.exe ]; then
-            asset="trailtracker-${{ matrix.os }}.exe"
-            cp target/release/trailtracker.exe "$asset"
-          else
-            asset="trailtracker-${{ matrix.os }}.tar.gz"
-            tar czf "$asset" -C target/release trailtracker
-          fi
-          echo "ASSET=$asset" >> "$GITHUB_ENV"
-      - name: Attach to release
-        uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ASSET }}
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: dtolnay/rust-toolchain@1.90.0
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Build and test the native target
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          cargo build --release --locked --bin trailtracker --target "$TARGET"
+          cargo test --workspace --locked --target "$TARGET"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Package and smoke-test the binary
+        env:
+          TARGET: ${{ matrix.target }}
+        run: python scripts/package_release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: [verify, build]
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: binary-*
+          merge-multiple: true
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: verification-report
+          path: dist
+      - name: Assemble and verify checksums
+        run: |
+          cd dist
+          cat ./*.sha256 > SHA256SUMS.txt
+          sha256sum verification-report.json >> SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+      - name: Publish the complete release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$RELEASE_TAG" --verify-tag --draft \
+            --title "TrailTracker $RELEASE_TAG" --notes-file RELEASE_NOTES.md \
+            dist/*.tar.gz dist/*.zip dist/SHA256SUMS.txt dist/verification-report.json
+          gh release edit "$RELEASE_TAG" --draft=false
