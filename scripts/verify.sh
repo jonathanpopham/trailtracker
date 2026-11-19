@@ -18,6 +18,9 @@ cargo build --release
 echo "==> tests"
 cargo test --workspace
 
+echo "==> parser verification mutation check"
+python3 scripts/check_verification_mutations.py parser
+
 echo "==> verification gate"
 cargo run --release -p trailtracker-eval --bin verify -- \
   --root . \
@@ -38,9 +41,9 @@ echo
 # Optional: formal proof if Kani is installed locally.
 if command -v cargo-kani >/dev/null 2>&1; then
   echo "==> formal verification (kani)"
-  cargo kani -p trailtracker-eval
+  bash scripts/verify_kani.sh
 else
-  echo "==> kani not installed; skipping formal proof (install: cargo install --locked kani-verifier && cargo kani setup)"
+  echo "==> kani not installed; skipping formal proof (install: cargo install --locked kani-verifier --version 0.68.0 && cargo kani setup)"
 fi
 
 echo "==> verification gate complete"

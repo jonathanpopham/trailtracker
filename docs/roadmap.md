@@ -115,8 +115,8 @@ above. Concretely:
 **Decision:** verification is a **build/CI step, not a shipped feature.** The
 deliverable is the `trailtracker` CLI executable. CI records test outcomes
 and the binary SHA-256 in a verification report; this is evidence from checks,
-not a proof of whole-program correctness. Kani is an optional, non-blocking
-additional check. None of the verification tooling enters the runtime binary.
+not a proof of whole-program correctness. Kani is optional locally and blocking
+in CI for bounded rewrite schemas. None of the verification tooling enters the runtime binary.
 
 Structure (shipped): a cargo **workspace** keeps the runtime crate std-only and
 zero-dep; a separate, never-shipped `eval` member holds the harness (also
@@ -135,9 +135,11 @@ Implemented:
   `eval/src/sha256.rs`): deterministic JSON report carrying regression + property
   results and the SHA-256 of the built binary; the report's own SHA-256 is
   printed for attestation. Non-zero exit blocks CI.
-- **Bounded formal proof** (`eval/src/kani_proofs.rs`, `#[cfg(kani)]` only): Kani
-  checks Rust parser losslessness for strings of at most five characters from
-  a selected ASCII alphabet. This does not prove all frontend semantics.
+- **Bounded verification**: workspace tests exhaustively execute all 1,508,598
+  Rust parser inputs up to five characters over the selected ASCII alphabet.
+  Kani proves bounded rewrite schemas. The symbolic parser proof is retained
+  behind `symbolic-parser-proof` but has not completed within CI resources;
+  exhaustive execution does not claim symbolic memory-safety verification.
 - **CI** (`.github/workflows/ci.yml`) + portable local mirror
   (`scripts/verify.sh`): fmt → clippy(-D warnings) → build → test → verify gate →
   upload report; separate Kani job.

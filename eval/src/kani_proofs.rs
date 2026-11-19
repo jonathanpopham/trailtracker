@@ -3,24 +3,23 @@
 //! Compiled **only** under `cargo kani` (`#[cfg(kani)]` gates the whole module),
 //! so the normal build and the runtime crate carry no `kani` dependency.
 //!
-//! The crown-jewel invariant for a safety-critical analysis tool is
-//! **losslessness**: the parser must never lose, alter, or invent source bytes.
-//! Kani proves this exhaustively for all inputs up to a bounded size — a
-//! machine-checked guarantee suitable for review by a defense customer.
+//! CI proves the rewrite schemas. Parser losslessness is exhaustively executed
+//! by `eval/tests/losslessness.rs` over the same bounded domain. Its symbolic
+//! proof remains available with `--features symbolic-parser-proof`; it has not
+//! completed within the CI resource budget and must not be claimed as proven.
 //!
 //! Run with: `cargo kani -p trailtracker-eval`
 
-use trailtracker::lang::rust::parser::parse;
-
 /// For every byte string of length up to `N` drawn from a structural alphabet,
 /// the CST reconstructs the source exactly and parsing does not panic.
+#[cfg(feature = "symbolic-parser-proof")]
 #[kani::proof]
 #[kani::unwind(8)]
 fn losslessness_is_total() {
-    const N: usize = 5;
+    use crate::losslessness::{ALPHABET, MAX_LEN as N};
+    use trailtracker::lang::rust::parser::parse;
     // A small but adversarial alphabet exercising delimiters, quotes, comments,
     // and identifier/whitespace bytes — the cases where losslessness is hard.
-    const ALPHABET: &[u8] = b"(){}[]\"'/*# \n;:a0";
 
     let len: usize = kani::any();
     kani::assume(len <= N);
@@ -149,7 +148,13 @@ fn k3c_loop_fold_schema() {
         pushed.push(x.wrapping_mul(2));
     }
     let mapped: Vec<i32> = xs.iter().take(len).map(|&x| x.wrapping_mul(2)).collect();
-    assert!(pushed == mapped, "push == map+collect");
+    // Vec<i32> equality lowers to a bytewise memcmp (up to 12 iterations),
+    // exceeding this harness's element-wise unwind bound. Check the same
+    // equality explicitly without weakening the input domain or loop checks.
+    assert!(pushed.len() == mapped.len(), "push == map+collect length");
+    for i in 0..pushed.len() {
+        assert!(pushed[i] == mapped[i], "push == map+collect element");
+    }
 
     // Filter-map form: guarded `push` (`if COND { push }`, no else).
     let t: i32 = kani::any();
@@ -164,7 +169,16 @@ fn k3c_loop_fold_schema() {
         .take(len)
         .filter_map(|&x| if x > t { Some(x.wrapping_mul(2)) } else { None })
         .collect();
-    assert!(guarded == filtered, "guarded push == filter_map+collect");
+    assert!(
+        guarded.len() == filtered.len(),
+        "guarded push == filter_map+collect length"
+    );
+    for i in 0..guarded.len() {
+        assert!(
+            guarded[i] == filtered[i],
+            "guarded push == filter_map+collect element"
+        );
+    }
 }
 
 /// `redundant-clone-elim` v1 schema (ADR-0007): a store of owned slots models
