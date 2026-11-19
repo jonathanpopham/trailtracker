@@ -4,6 +4,7 @@
 import argparse
 import os
 from pathlib import Path
+import re
 import shutil
 import signal
 import subprocess
@@ -54,13 +55,13 @@ def main():
                 "wrong-map-value",
                 "map(|&x| x.wrapping_mul(2))",
                 "map(|&x| x.wrapping_mul(3))",
-                "Failed Checks: push == map+collect element",
+                "push == map+collect element",
             ),
             (
                 "reversed-filter",
                 "filter_map(|&x| if x > t",
                 "filter_map(|&x| if x < t",
-                "Failed Checks: guarded push == filter_map+collect",
+                "guarded push == filter_map+collect",
             ),
         ]
 
@@ -90,7 +91,11 @@ def main():
                 source.write_text(original, encoding="utf-8")
             if code == 0:
                 raise SystemExit(f"SURVIVED: {name}; see {log}")
-            if expected not in output or (args.suite == "kani" and (
+            # Kani quotes assertion descriptions in its Failed Checks summary.
+            # Match only that summary, not source excerpts in compiler output.
+            failures = "\n".join(re.findall(r"^Failed Checks: (.+)$", output, re.MULTILINE))
+            evidence = failures if args.suite == "kani" else output
+            if expected not in evidence or (args.suite == "kani" and (
                 "VERIFICATION:- FAILED" not in output
                 or "undetermined" in output.lower()
                 or "timed out" in output.lower()
