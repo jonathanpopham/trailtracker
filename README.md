@@ -117,10 +117,14 @@ report containing the binary hash. CI also compares selected language front
 ends with external parsers and evaluates ontology views on a pinned cohort of
 11 repositories across six languages.
 
-Kani harnesses add bounded checks when Kani is installed. The parser harness
-covers the Rust parser on strings of at most five characters from a selected
-ASCII alphabet. Rewrite harnesses cover small semantic models under documented
-assumptions. Kani is optional locally and non-blocking in the current CI.
+The workspace tests exhaustively execute all 1,508,598 Rust parser inputs of
+length zero through five from a selected 17-character ASCII alphabet, checking
+that parsing completes and reconstructs each input exactly. This is exhaustive
+behavioral testing, not a symbolic memory-safety proof. Kani 0.68.0 proves the
+rewrite schemas over small semantic models under documented assumptions; its
+CI job is blocking and checks selected deliberate defects. Kani remains optional
+locally. See [local verification](docs/local-ci.md) for commands and the retained,
+opt-in symbolic parser proof, which has not completed within CI resources.
 
 Recorded evaluations, including unfavorable results, are in
 [benchmarks](benchmarks/) and [docs/evals](docs/evals/). The eShop domain

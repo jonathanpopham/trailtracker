@@ -11,6 +11,13 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gate:
     name: compile · test · eval
@@ -39,6 +46,9 @@ jobs:
 
       - name: Test (workspace)
         run: cargo test --workspace
+
+      - name: Parser verification mutation check
+        run: python3 scripts/check_verification_mutations.py parser
 
       - name: Verification gate (regression + property/fuzz + attestation)
         run: |
@@ -70,27 +80,24 @@ jobs:
 
   formal:
     name: formal verification (kani)
-    runs-on: ubuntu-latest
-    # Kept non-blocking until the Kani toolchain is pinned in CI; the proof still
-    # runs and its result is visible. Flip to blocking once stabilized.
-    continue-on-error: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust (stable)
-        run: |
-          if ! command -v rustup >/dev/null; then
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
-            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-            export PATH="$HOME/.cargo/bin:$PATH"
-          fi
-          rustup toolchain install stable --profile minimal
-          rustup default stable
+      - uses: dtolnay/rust-toolchain@1.90.0
 
       - name: Install Kani
         run: |
-          cargo install --locked kani-verifier
+          cargo install --locked kani-verifier --version 0.68.0
           cargo kani setup
 
-      - name: Prove losslessness invariant
-        run: cargo kani -p trailtracker-eval
+      - name: Prove rewrite schemas and detect selected mutations
+        run: bash scripts/verify_kani.sh
+
+      - name: Upload mutation evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: kani-mutation-evidence
+          path: target/verification-mutations/kani/

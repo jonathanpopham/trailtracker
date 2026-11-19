@@ -9,7 +9,7 @@ Passing those checks is not a certification of semantic correctness.
 ```
 feature branch ──► open PR ──► CI gate (must be green) ──► owner review ──► merge to main
                                      │
-                                     └── fmt · clippy · test · verify · regress · (kani)
+                                     └── fmt · clippy · test · verify · regress · kani
 ```
 
 1. **Branch.** No direct pushes to `main`. Work happens on a feature branch.
@@ -24,8 +24,11 @@ feature branch ──► open PR ──► CI gate (must be green) ──► own
    - **verify** — self-analysis regression + property/fuzz (20k cases) +
      hash-attestable report
    - **regress** — golden-snapshot regression over the known-codebase corpus
-   - **kani** (separate job) — bounded formal proof of losslessness
-     (non-blocking until the toolchain is pinned)
+   - **parser losslessness** — all 1,508,598 bounded inputs, in workspace tests,
+     plus a selected token-loss mutation check
+   - **kani** (separate blocking job) — pinned bounded rewrite proofs and
+     selected mutation checks; see [local CI](local-ci.md) for the optional
+     symbolic parser proof and the distinction from exhaustive execution
 4. **Owner review.** `CODEOWNERS` requires review from the code owner. Changes
    under `eval/golden/` (the regression contract) always require explicit review
    of the diff.
@@ -75,5 +78,6 @@ On `main` → Settings → Branches → Branch protection rule:
 - [x] Require a pull request before merging
 - [x] Require approvals (≥ 1) and require review from Code Owners
 - [x] Require status checks to pass before merging → **`compile · test · eval`**
+  and **`formal verification (kani)`**
 - [x] Require branches to be up to date before merging
 - [x] Do not allow bypassing the above settings

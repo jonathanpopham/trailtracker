@@ -12,6 +12,7 @@
 pub mod atlas;
 pub mod fuzz_extractors;
 pub mod golden;
+pub mod losslessness;
 pub mod metamorphic;
 pub mod property;
 pub mod regression;
